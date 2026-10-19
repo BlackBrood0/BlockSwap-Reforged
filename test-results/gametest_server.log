@@ -1,0 +1,69 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :createMinecraftArtifacts UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :writeGameTestServerLegacyClasspath UP-TO-DATE
+> Task :prepareGameTestServerRun UP-TO-DATE
+
+> Task :runGameTestServer
+WARN StatusConsoleListener Advanced terminal features are not available in this environment
+[23:24:29] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserverdev, --gameDir, ., --fml.fmlVersion, 4.0.45, --fml.mcVersion, 1.21.1, --fml.neoForgeVersion, 21.1.263, --fml.neoFormVersion, 20240808.144430]
+[23:24:29] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: JVM identified as Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.10+7-LTS
+[23:24:29] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.10 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[23:24:29] [main/INFO] [ne.ne.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserverdev
+[23:24:29] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/pc/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.16.4+mixin.0.8.7/26d01f0567ab46e9ca0d2ed89d0ecc11aadbd433/sponge-mixin-0.16.4+mixin.0.8.7.jar%2396!/ Service=ModLauncher Env=SERVER
+[23:24:30] [main/INFO] [ne.ne.fm.lo.mo.lo.JarInJarDependencyLocator/]: Found 2 dependencies adding them to mods collection
+[23:24:30] [main/INFO] [ne.ne.fm.lo.mo.ModDiscoverer/]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Block Swap 6.0.0.0 (blockswap)
+		Minecraft 1.21.1 (minecraft)
+		NeoForge 21.1.263 (neoforge)
+[23:24:30] [main/INFO] [mixin/]: Compatibility level set to JAVA_21
+[23:24:30] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserverdev' with arguments [--gameDir, .]
+[23:24:31] [main/WARN] [os.dr.wi.pe.PerfmonDisabled/]: Invalid registry value type detected for PerfOS counters. Should be REG_DWORD. Ignoring: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PerfOS\Performance\Disable Performance Counters.
+[23:24:31] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.5).
+[23:24:36] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[23:24:36] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, location] and [teleport, targets] with inputs: [0.1 -0.5 .9, 0 0 0]
+[23:24:36] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, destination] and [teleport, targets] with inputs: [Player, 0123, @e, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[23:24:36] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets] and [teleport, destination] with inputs: [Player, 0123, dd12be42-52a9-4a91-a8a1-11c01849e498]
+[23:24:36] [main/WARN] [minecraft/Commands]: Ambiguity between arguments [teleport, targets, location] and [teleport, targets, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
+[23:24:36] [modloading-worker-0/INFO] [ne.ne.ne.co.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.263, for MC 1.21.1
+[23:24:36] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[23:24:36] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/C:/Users/pc/Documents/BlockSwap/build/moddev/artifacts/neoforge-21.1.263.jar%23127!/assets/.mcassetsroot' uses unexpected schema
+[23:24:36] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/C:/Users/pc/Documents/BlockSwap/build/moddev/artifacts/neoforge-21.1.263.jar%23127!/data/.mcassetsroot' uses unexpected schema
+[23:24:36] [main/INFO] [ne.ne.ne.ga.GameTestHooks/]: Enabled Gametest Namespaces: [blockswap]
+[23:24:37] [main/INFO] [minecraft/RecipeManager]: Loaded 1291 recipes
+[23:24:37] [main/INFO] [minecraft/AdvancementTree]: Loaded 1400 advancements
+[23:24:37] [Server thread/INFO] [blockswap/]: Reloading BlockSwap configuration on world load
+[23:24:38] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[23:24:38] [worldgen/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 2%
+[23:24:38] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 179 ms
+[23:24:38] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[23:24:38] [Server thread/INFO] [ne.ne.ne.se.pe.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[23:24:38] [Server thread/INFO] [minecraft/GameTestServer]: 8 tests are now running at position 14127229, -59, -160318!
+[23:24:39] [Server thread/INFO] [minecraft/GameTestRunner]: Running test batch 'defaultBatch:0' (8 tests)...
+[23:24:39] [Server thread/INFO] [minecraft/GameTestServer]: [        ]
+[23:24:39] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++]
+[23:24:39] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++]
+[23:24:39] [Server thread/INFO] [minecraft/GameTestServer]: ========= 8 GAME TESTS COMPLETE IN 350.4 ms ======================
+[23:24:39] [Server thread/INFO] [minecraft/GameTestServer]: All 8 required tests passed :)
+[23:24:39] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[23:24:39] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[23:24:39] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[23:24:39] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[23:24:39] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:overworld
+[23:24:40] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_end
+[23:24:40] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[Test Level]'/minecraft:the_nether
+[23:24:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[23:24:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[23:24:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[23:24:40] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[23:24:40] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+
+BUILD SUCCESSFUL in 19s
+7 actionable tasks: 1 executed, 6 up-to-date

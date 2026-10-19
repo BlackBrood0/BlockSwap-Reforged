@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="LGPL-3.0"
+issueTrackerURL="https://github.com/CorgiTaco-MC/Block-Swap/issues"
+
+[[mods]]
+modId="blockswap"
+version="${mod_version}"
+displayName="Block Swap"
+displayURL="https://github.com/CorgiTaco-MC/Block-Swap/"
+logoFile="assets/blockswap/blockswap.png"
+authors="Corgi Taco"
+description='''
+Simply replaces one block with another.
+'''
+
+[[mixins]]
+config="blockswap.mixins.json"
+
+[[dependencies.blockswap]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.0,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.blockswap]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.22)"
+ordering="NONE"
+side="BOTH"
