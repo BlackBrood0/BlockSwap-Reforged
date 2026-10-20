@@ -8,19 +8,15 @@
 
 package corgitaco.blockswap.gametest;
 
-import com.mojang.serialization.MapCodec;
 import corgitaco.blockswap.BlockSwap;
 import corgitaco.blockswap.config.BlockSwapConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.gametest.framework.FunctionGameTestInstance;
+import net.minecraft.gametest.framework.BlockBasedTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -56,25 +52,24 @@ public class BlockSwapGameTests {
         register(event, env, "test_config_reload", emptyStructure, BlockSwapGameTests::testConfigReload);
     }
 
+    public static class BlockSwapTestInstance extends BlockBasedTestInstance {
+        private final Consumer<GameTestHelper> testFunc;
+
+        public BlockSwapTestInstance(TestData<Holder<TestEnvironmentDefinition<?>>> testData, Consumer<GameTestHelper> testFunc) {
+            super(testData);
+            this.testFunc = testFunc;
+        }
+
+        @Override
+        public void run(GameTestHelper helper) {
+            this.testFunc.accept(helper);
+        }
+    }
+
     private static void register(RegisterGameTestsEvent event, Holder<TestEnvironmentDefinition<?>> env, String name, Identifier structure, Consumer<GameTestHelper> testFunc) {
         Identifier testId = Identifier.fromNamespaceAndPath(BlockSwap.MOD_ID, name);
         TestData<Holder<TestEnvironmentDefinition<?>>> testData = new TestData<>(env, structure, 100, 0, true);
-        event.registerTest(testId, new GameTestInstance(testData) {
-            @Override
-            public void run(GameTestHelper helper) {
-                testFunc.accept(helper);
-            }
-
-            @Override
-            public MapCodec<? extends GameTestInstance> codec() {
-                return FunctionGameTestInstance.CODEC;
-            }
-
-            @Override
-            protected MutableComponent typeDescription() {
-                return Component.literal("blockswap");
-            }
-        });
+        event.registerTest(testId, new BlockSwapTestInstance(testData, testFunc));
     }
 
     private static void setupTestConfig() {

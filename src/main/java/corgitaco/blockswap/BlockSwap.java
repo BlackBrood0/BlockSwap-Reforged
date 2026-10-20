@@ -64,7 +64,9 @@ public class BlockSwap {
     }
 
     private void registerGameTests(final RegisterGameTestsEvent event) {
-        BlockSwapGameTests.registerTests(event);
+        if (net.neoforged.neoforge.server.loading.ServerModLoader.isGameTestServer()) {
+            BlockSwapGameTests.registerTests(event);
+        }
     }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
