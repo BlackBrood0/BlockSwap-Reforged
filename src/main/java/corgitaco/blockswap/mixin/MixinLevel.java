@@ -26,9 +26,6 @@ public abstract class MixinLevel {
             ordinal = 0
     )
     private BlockState replaceSetBlockState(BlockState state) {
-        if (BlockSwapConfig.getConfig(false).contains(state)) {
-            return Swapper.remapState(state);
-        }
-        return state;
+        return Swapper.remapState(state);
     }
 }

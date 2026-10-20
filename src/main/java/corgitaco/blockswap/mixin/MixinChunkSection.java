@@ -26,7 +26,7 @@ public abstract class MixinChunkSection {
             ordinal = 0
     )
     private BlockState replaceState(BlockState state) {
-        if (!BlockSwapConfig.getConfig(false).retroGen() && BlockSwapConfig.getConfig(false).contains(state)) {
+        if (!BlockSwapConfig.getConfig(false).retroGen()) {
             return Swapper.remapState(state);
         }
         return state;

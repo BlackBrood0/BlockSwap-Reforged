@@ -34,7 +34,7 @@ public record BlockSwapConfig(
         boolean retroGen,
         boolean generateAllKnownStates
 ) {
-    public static final BlockSwapConfig DEFAULT = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), false, true);
+    public static final BlockSwapConfig DEFAULT = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), false, false);
 
     private static final Jankson JANKSON = Jankson.builder().build();
     private static BlockSwapConfig CONFIG = null;
@@ -74,7 +74,7 @@ public record BlockSwapConfig(
             	"retro_gen": false,
 
             	// Generates all block states for all blocks in the registry.
-            	"generate_all_known_states": true
+            	"generate_all_known_states": false
             }
             """;
 
@@ -84,6 +84,7 @@ public record BlockSwapConfig(
 
     public static BlockSwapConfig getConfig(BlockSwapConfig serverConfig) {
         CONFIG = serverConfig;
+        corgitaco.blockswap.swapper.Swapper.clearCache();
         return CONFIG;
     }
 
@@ -100,10 +101,12 @@ public record BlockSwapConfig(
                     BlockSwap.LOGGER.error("Failed to create default config at {}", path, e);
                 }
                 CONFIG = DEFAULT;
+                corgitaco.blockswap.swapper.Swapper.clearCache();
                 return CONFIG;
             }
 
             CONFIG = loadFromFile(path);
+            corgitaco.blockswap.swapper.Swapper.clearCache();
         }
         return CONFIG;
     }

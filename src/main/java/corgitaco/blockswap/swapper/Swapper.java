@@ -36,18 +36,31 @@ import java.util.TreeMap;
 
 public class Swapper {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Map<BlockState, BlockState> REMAP_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void clearCache() {
+        REMAP_CACHE.clear();
+    }
 
     public static BlockState remapState(BlockState incomingState) {
+        BlockState cached = REMAP_CACHE.get(incomingState);
+        if (cached != null) {
+            return cached;
+        }
+
         BlockSwapConfig config = BlockSwapConfig.getConfig(false);
 
         // 1. Explicit block state mapping takes precedence
         if (config.blockStateBlockStateMap().containsKey(incomingState)) {
-            return config.blockStateBlockStateMap().get(incomingState);
+            BlockState mapped = config.blockStateBlockStateMap().get(incomingState);
+            REMAP_CACHE.put(incomingState, mapped);
+            return mapped;
         }
 
         // 2. Block-to-block mapping with property transfer
         Block targetBlock = config.blockBlockMap().get(incomingState.getBlock());
         if (targetBlock == null) {
+            REMAP_CACHE.put(incomingState, incomingState);
             return incomingState;
         }
 
@@ -60,6 +73,7 @@ public class Swapper {
             }
         }
 
+        REMAP_CACHE.put(incomingState, newState);
         return newState;
     }
 
@@ -119,25 +133,29 @@ public class Swapper {
             return;
         }
 
-        Map<Block, List<BlockState>> allKnownStates = new TreeMap<>(Comparator.comparing(b -> BuiltInRegistries.BLOCK.getKey(b).toString()));
-        for (Block block : BuiltInRegistries.BLOCK) {
-            allKnownStates.put(block, block.getStateDefinition().getPossibleStates());
-        }
-
-        Path knownStatesDir = configDir.resolve("known_states");
-        allKnownStates.forEach((block, states) -> {
-            Identifier key = BuiltInRegistries.BLOCK.getKey(block);
-            Path filePath = knownStatesDir.resolve(key.getNamespace()).resolve(key.getPath() + ".json5");
-            if (!Files.exists(filePath)) {
-                try {
-                    Files.createDirectories(filePath.getParent());
-                    JsonElement json = BlockState.CODEC.listOf().encodeStart(JsonOps.INSTANCE, states)
-                            .getOrThrow(IllegalStateException::new);
-                    Files.writeString(filePath, GSON.toJson(json));
-                } catch (IOException | IllegalStateException e) {
-                    BlockSwap.LOGGER.error("Failed to generate known states for block {}", key, e);
-                }
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            BlockSwap.LOGGER.info("Generating known states in background...");
+            Map<Block, List<BlockState>> allKnownStates = new TreeMap<>(Comparator.comparing(b -> BuiltInRegistries.BLOCK.getKey(b).toString()));
+            for (Block block : BuiltInRegistries.BLOCK) {
+                allKnownStates.put(block, block.getStateDefinition().getPossibleStates());
             }
+
+            Path knownStatesDir = configDir.resolve("known_states");
+            allKnownStates.forEach((block, states) -> {
+                Identifier key = BuiltInRegistries.BLOCK.getKey(block);
+                Path filePath = knownStatesDir.resolve(key.getNamespace()).resolve(key.getPath() + ".json5");
+                if (!Files.exists(filePath)) {
+                    try {
+                        Files.createDirectories(filePath.getParent());
+                        JsonElement json = BlockState.CODEC.listOf().encodeStart(JsonOps.INSTANCE, states)
+                                .getOrThrow(IllegalStateException::new);
+                        Files.writeString(filePath, GSON.toJson(json));
+                    } catch (IOException | IllegalStateException e) {
+                        BlockSwap.LOGGER.error("Failed to generate known states for block {}", key, e);
+                    }
+                }
+            });
+            BlockSwap.LOGGER.info("Known states generation complete.");
         });
     }
 }
