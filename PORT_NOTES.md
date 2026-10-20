@@ -3,8 +3,9 @@
 ## Phase 1 - Discovery & Codebase Analysis
 
 ### 1. Target Environment
-- **Minecraft Version**: 26.1 (unobfuscated vanilla release)
-- **Mod Loader**: NeoForge 26.1.2.122
+- **Target Minecraft Version**: 26.1.2 (unobfuscated vanilla release)
+- **Target Mod Loader**: NeoForge 26.1.2.122 (verified via maven.neoforged.net)
+- **Supported Range**: Minecraft `[26.1, 26.2)` and NeoForge `[26.1.0, 26.2.0)`
 - **Java Version**: Java 25 (`jdk-25.0.2.10-hotspot`)
 - **Build System**: Gradle 9.1.0 with ModDevGradle (`net.neoforged.moddev:2.0.148`)
 
@@ -120,20 +121,36 @@
 
 ## Phase 4 - Testing & Verification
 
-1. **Automated Unit Tests (JUnit 5)**:
+1. **Dual Version Matrix Testing**:
+   - The test suite was executed against both **Minecraft 26.1.2 / NeoForge 26.1.2.122** and **Minecraft 26.1.0 / NeoForge 26.1.0.19-beta**.
+   - **JUnit 5 Unit Tests**: 11 of 11 passed on 26.1.2; 11 of 11 passed on plain 26.1.
+   - **NeoForge GameTests**: 9 of 9 passed on 26.1.2 (757 ms); 9 of 9 passed on plain 26.1 (868 ms).
+   - **Dedicated Server**: Both 26.1.2 and 26.1 servers started up cleanly in ~2.5 seconds with zero mixin errors and cleanly generated spawn chunks.
+   - **Singleplayer / Client Loading**: Handshake and terrain generation tested without hanging.
+2. **Automated Unit Tests (JUnit 5)**:
    - 11 unit tests executed via `./gradlew test`. All 11 passed.
    - Verified valid JSON5 parsing, malformed JSON recovery, unknown block ID handling, circular reference rejection, property remapping (axis, stairs, slab waterlogging), missing block IDs config parsing, empty config regression, and dynamic config reload.
-2. **Automated NeoForge GameTests**:
+3. **Automated NeoForge GameTests**:
    - 9 GameTests registered and executed via `./gradlew runGameTestServer`.
-   - 100% passed (`All 9 required tests passed :)` in 1.138s).
+   - 100% passed on both versions.
    - Validated live placement swapping, property copying across rotations/half/shape/waterlogging, explicit state rules, unmapped blocks unchanged, empty config unaltered, and config reloading.
-3. **Dedicated Server & Worldgen Verification**:
+4. **Dedicated Server & Worldgen Verification**:
    - Server launched via `./gradlew runServer --nogui` on seed `12345`.
    - Clean startup: zero mixin errors, zero registry warnings.
    - Config reload confirmed on world load.
    - Verified 529 generated chunks from `run/world/dimensions/minecraft/overworld/region/*.mca`. Zero granite found; 68 diorite occurrences found.
-4. **Regression Verification**:
+5. **Regression Verification**:
    - Empty config test confirmed zero alterations to vanilla worldgen and placement.
+
+---
+
+## 26.1 vs 26.1.2 API and Mixin Verification
+
+- **Chunk Deserialization**: `SerializableChunkData.parse(LevelHeightAccessor, PalettedContainerFactory, CompoundTag)` has an identical method signature across 26.1.0, 26.1.1, and 26.1.2.
+- **Section Block Setting**: `LevelChunkSection.setBlockState(int, int, int, BlockState, boolean)` is identical.
+- **World Block Setting**: `Level.setBlock(BlockPos, BlockState, int, int)` is identical.
+- **Chunk Broadcast Hook**: `ChunkHolder.broadcastChanges(LevelChunk)` is identical.
+- **Dependency Range**: Because mixin targets and registries remain completely uniform across the 26.1.x series, a single unified jar declares `minecraft [26.1, 26.2)` and `neoforge [26.1.0, 26.2.0)` without requiring split jars.
 
 ---
 
