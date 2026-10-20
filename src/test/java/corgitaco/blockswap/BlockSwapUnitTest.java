@@ -204,12 +204,15 @@ public class BlockSwapUnitTest {
 
     @Test
     public void testWorldGenRegionChunkVerification() throws Exception {
-        Path regionDir = Path.of("run/world/region");
+        Path regionDir = Path.of("run/world/dimensions/minecraft/overworld/region");
         if (!Files.exists(regionDir)) {
-            regionDir = Path.of("../run/world/region");
+            regionDir = Path.of("run/world/region");
         }
         if (!Files.exists(regionDir)) {
-            regionDir = Path.of("../../run/world/region");
+            regionDir = Path.of("../run/world/dimensions/minecraft/overworld/region");
+        }
+        if (!Files.exists(regionDir)) {
+            regionDir = Path.of("../../run/world/dimensions/minecraft/overworld/region");
         }
         if (!Files.exists(regionDir)) {
             System.out.println("No region directory found, skipping region disk check");
@@ -233,19 +236,19 @@ public class BlockSwapUnitTest {
                                 try (java.io.DataInputStream dis = regionFile.getChunkDataInputStream(pos)) {
                                     if (dis != null) {
                                         CompoundTag tag = NbtIo.read(dis);
-                                        ListTag sections = tag.getList("sections", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                                        ListTag sections = tag.getListOrEmpty("sections");
                                         for (int s = 0; s < sections.size(); s++) {
-                                            CompoundTag sec = sections.getCompound(s);
-                                            if (sec.contains("block_states", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
-                                                CompoundTag bs = sec.getCompound("block_states");
-                                                if (bs.contains("palette", net.minecraft.nbt.Tag.TAG_LIST)) {
-                                                    ListTag pal = bs.getList("palette", net.minecraft.nbt.Tag.TAG_COMPOUND);
-                                                    for (int p = 0; p < pal.size(); p++) {
-                                                        String name = pal.getCompound(p).getString("Name");
-                                                        assertNotEquals("minecraft:granite", name, "Found replaced block minecraft:granite in generated chunk at " + pos);
-                                                        if ("minecraft:diorite".equals(name)) {
-                                                            dioriteFoundCount++;
-                                                        }
+                                            CompoundTag sec = sections.getCompoundOrEmpty(s);
+                                            java.util.Optional<CompoundTag> bsOpt = sec.getCompound("block_states");
+                                            if (bsOpt.isPresent()) {
+                                                CompoundTag bs = bsOpt.get();
+                                                ListTag pal = bs.getListOrEmpty("palette");
+                                                for (int p = 0; p < pal.size(); p++) {
+                                                    CompoundTag state = pal.getCompoundOrEmpty(p);
+                                                    String name = state.getStringOr("Name", "");
+                                                    assertNotEquals("minecraft:granite", name, "Found replaced block minecraft:granite in generated chunk at " + pos);
+                                                    if ("minecraft:diorite".equals(name)) {
+                                                        dioriteFoundCount++;
                                                     }
                                                 }
                                             }

@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import corgitaco.blockswap.BlockSwap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.io.File;
@@ -117,9 +117,9 @@ public record MissingBlockIDsConfig(Map<String, Block> idRemapper) {
 
     private static Optional<Block> parseBlock(String id) {
         try {
-            ResourceLocation rl = ResourceLocation.parse(id);
+            Identifier rl = Identifier.parse(id);
             if (BuiltInRegistries.BLOCK.containsKey(rl)) {
-                return Optional.of(BuiltInRegistries.BLOCK.get(rl));
+                return BuiltInRegistries.BLOCK.getOptional(rl);
             }
         } catch (Exception ignored) {
         }

@@ -64,7 +64,7 @@ public class BlockSwap {
     }
 
     private void registerGameTests(final RegisterGameTestsEvent event) {
-        event.register(BlockSwapGameTests.class);
+        BlockSwapGameTests.registerTests(event);
     }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {

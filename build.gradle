@@ -11,7 +11,7 @@ base {
     archivesName = "${mod_id}-neoforge-${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = project.neo_version
@@ -61,7 +61,6 @@ repositories {
 
 dependencies {
     implementation("blue.endless:jankson:1.2.3")
-    additionalRuntimeClasspath("blue.endless:jankson:1.2.3")
     jarJar("blue.endless:jankson:1.2.3") {
         version {
             strictly("[1.2.3, 2.0.0)")

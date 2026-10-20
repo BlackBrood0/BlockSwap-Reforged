@@ -20,13 +20,13 @@ config="blockswap.mixins.json"
 [[dependencies.blockswap]]
 modId="neoforge"
 type="required"
-versionRange="[21.1.0,)"
+versionRange="[26.1.0,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.blockswap]]
 modId="minecraft"
 type="required"
-versionRange="[1.21.1,1.22)"
+versionRange="[26.1,27)"
 ordering="NONE"
 side="BOTH"

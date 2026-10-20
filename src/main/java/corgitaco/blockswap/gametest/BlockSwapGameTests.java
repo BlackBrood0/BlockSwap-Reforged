@@ -8,13 +8,20 @@
 
 package corgitaco.blockswap.gametest;
 
+import com.mojang.serialization.MapCodec;
 import corgitaco.blockswap.BlockSwap;
 import corgitaco.blockswap.config.BlockSwapConfig;
-import corgitaco.blockswap.swapper.Swapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.core.Holder;
+import net.minecraft.gametest.framework.FunctionGameTestInstance;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.GameTestInstance;
+import net.minecraft.gametest.framework.TestData;
+import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
@@ -23,10 +30,52 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.block.state.properties.StairsShape;
+import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 
 import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class BlockSwapGameTests {
+
+    public static void registerTests(RegisterGameTestsEvent event) {
+        Holder<TestEnvironmentDefinition<?>> env = event.registerEnvironment(
+                Identifier.fromNamespaceAndPath(BlockSwap.MOD_ID, "default"),
+                new TestEnvironmentDefinition.AllOf(List.of())
+        );
+
+        Identifier emptyStructure = Identifier.fromNamespaceAndPath(BlockSwap.MOD_ID, "empty");
+
+        register(event, env, "test_live_placement_granite_to_diorite", emptyStructure, BlockSwapGameTests::testLivePlacementGraniteToDiorite);
+        register(event, env, "test_axis_property_remapping", emptyStructure, BlockSwapGameTests::testAxisPropertyRemapping);
+        register(event, env, "test_stairs_property_remapping", emptyStructure, BlockSwapGameTests::testStairsPropertyRemapping);
+        register(event, env, "test_waterlogged_property_remapping", emptyStructure, BlockSwapGameTests::testWaterloggedPropertyRemapping);
+        register(event, env, "test_explicit_state_swapper", emptyStructure, BlockSwapGameTests::testExplicitStateSwapper);
+        register(event, env, "test_unmapped_block_remains_unchanged", emptyStructure, BlockSwapGameTests::testUnmappedBlockRemainsUnchanged);
+        register(event, env, "test_empty_config_changes_nothing", emptyStructure, BlockSwapGameTests::testEmptyConfigChangesNothing);
+        register(event, env, "test_config_reload", emptyStructure, BlockSwapGameTests::testConfigReload);
+    }
+
+    private static void register(RegisterGameTestsEvent event, Holder<TestEnvironmentDefinition<?>> env, String name, Identifier structure, Consumer<GameTestHelper> testFunc) {
+        Identifier testId = Identifier.fromNamespaceAndPath(BlockSwap.MOD_ID, name);
+        TestData<Holder<TestEnvironmentDefinition<?>>> testData = new TestData<>(env, structure, 100, 0, true);
+        event.registerTest(testId, new GameTestInstance(testData) {
+            @Override
+            public void run(GameTestHelper helper) {
+                testFunc.accept(helper);
+            }
+
+            @Override
+            public MapCodec<? extends GameTestInstance> codec() {
+                return FunctionGameTestInstance.CODEC;
+            }
+
+            @Override
+            protected MutableComponent typeDescription() {
+                return Component.literal("blockswap");
+            }
+        });
+    }
 
     private static void setupTestConfig() {
         IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
@@ -36,13 +85,11 @@ public class BlockSwapGameTests {
         blockMap.put(Blocks.OAK_SLAB, Blocks.BIRCH_SLAB);
 
         IdentityHashMap<BlockState, BlockState> stateMap = new IdentityHashMap<>();
-        // Explicit swap: gold block -> emerald block
         stateMap.put(Blocks.GOLD_BLOCK.defaultBlockState(), Blocks.EMERALD_BLOCK.defaultBlockState());
 
         BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, stateMap, false, false));
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testLivePlacementGraniteToDiorite(GameTestHelper helper) {
         setupTestConfig();
         BlockPos pos = new BlockPos(1, 1, 1);
@@ -53,7 +100,6 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testAxisPropertyRemapping(GameTestHelper helper) {
         setupTestConfig();
         BlockPos pos = new BlockPos(1, 1, 1);
@@ -72,7 +118,6 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testStairsPropertyRemapping(GameTestHelper helper) {
         setupTestConfig();
         BlockPos pos = new BlockPos(1, 1, 1);
@@ -101,7 +146,6 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testWaterloggedPropertyRemapping(GameTestHelper helper) {
         setupTestConfig();
         BlockPos pos = new BlockPos(1, 1, 1);
@@ -126,7 +170,6 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testExplicitStateSwapper(GameTestHelper helper) {
         setupTestConfig();
         BlockPos pos = new BlockPos(1, 1, 1);
@@ -137,7 +180,6 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testUnmappedBlockRemainsUnchanged(GameTestHelper helper) {
         setupTestConfig();
         BlockPos pos = new BlockPos(1, 1, 1);
@@ -148,9 +190,7 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testEmptyConfigChangesNothing(GameTestHelper helper) {
-        // Regression test: empty config should not change any blocks
         BlockSwapConfig.getConfig(BlockSwapConfig.DEFAULT);
         BlockPos pos1 = new BlockPos(1, 1, 1);
         BlockPos pos2 = new BlockPos(1, 1, 2);
@@ -164,9 +204,7 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testConfigReload(GameTestHelper helper) {
-        // Step 1: Initial config (granite -> diorite)
         IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> initialMap = new IdentityHashMap<>();
         initialMap.put(Blocks.GRANITE, Blocks.DIORITE);
         BlockSwapConfig.getConfig(new BlockSwapConfig(initialMap, new IdentityHashMap<>(), false, false));
@@ -175,20 +213,16 @@ public class BlockSwapGameTests {
         helper.setBlock(pos, Blocks.GRANITE);
         helper.assertBlockPresent(Blocks.DIORITE, pos);
 
-        // Step 2: Reload config with new rule (cobblestone -> mossy_cobblestone)
         IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> reloadedMap = new IdentityHashMap<>();
         reloadedMap.put(Blocks.COBBLESTONE, Blocks.MOSSY_COBBLESTONE);
         BlockSwapConfig.getConfig(new BlockSwapConfig(reloadedMap, new IdentityHashMap<>(), false, false));
 
-        // Former rule (granite -> diorite) should no longer apply
         helper.setBlock(pos, Blocks.GRANITE);
         helper.assertBlockPresent(Blocks.GRANITE, pos);
 
-        // New rule (cobblestone -> mossy_cobblestone) should apply
         helper.setBlock(pos, Blocks.COBBLESTONE);
         helper.assertBlockPresent(Blocks.MOSSY_COBBLESTONE, pos);
 
         helper.succeed();
     }
 }
-

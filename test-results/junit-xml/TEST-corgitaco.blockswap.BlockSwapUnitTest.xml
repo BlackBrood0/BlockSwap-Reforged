@@ -1,119 +1,405 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="corgitaco.blockswap.BlockSwapUnitTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-18T21:24:11" hostname="BLACKBROOD" time="0.158">
+<testsuite name="corgitaco.blockswap.BlockSwapUnitTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-20T17:56:52.341Z" hostname="BLACKBROOD" time="0.196">
   <properties/>
   <testcase name="testPropertyRemappingSlabWaterlogged()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.009"/>
   <testcase name="testCircularReferenceDetection()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.003"/>
   <testcase name="testPropertyRemappingStairs()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.001"/>
   <testcase name="testEmptyConfigRegression()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.001"/>
-  <testcase name="testPropertyRemappingAxis()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.001"/>
-  <testcase name="testMissingBlockIDsConfigParsing()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.002"/>
-  <testcase name="testValidJson5ConfigParsing()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.001"/>
-  <testcase name="testMalformedJsonHandling()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.015"/>
+  <testcase name="testPropertyRemappingAxis()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.0"/>
+  <testcase name="testMissingBlockIDsConfigParsing()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.001"/>
+  <testcase name="testValidJson5ConfigParsing()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.0"/>
+  <testcase name="testMalformedJsonHandling()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.043"/>
   <testcase name="testConfigReload()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.004"/>
-  <testcase name="testUnknownBlockIdHandling()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.005"/>
-  <testcase name="testWorldGenRegionChunkVerification()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.114"/>
-  <system-out><![CDATA[[23:24:11] [Test worker/ERROR] [blockswap/]: Detected circular BLOCK reference in 'swapper'! Block 'minecraft:granite' maps to 'minecraft:diorite' which is also swapped.
-[23:24:11] [Test worker/ERROR] [blockswap/]: Unknown replacement block 'minecraft:non_existent' in 'id_remapper' for 'mod:invalid_block', skipping
-[23:24:11] [Test worker/ERROR] [blockswap/]: Failed to parse config json string, using default
+  <testcase name="testUnknownBlockIdHandling()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.002"/>
+  <testcase name="testWorldGenRegionChunkVerification()" classname="corgitaco.blockswap.BlockSwapUnitTest" time="0.13"/>
+  <system-out><![CDATA[[19:56:52] [Test worker/ERROR] [blockswap/]: Detected circular BLOCK reference in 'swapper'! Block 'minecraft:granite' maps to 'minecraft:diorite' which is also swapped.
+[19:56:52] [Test worker/ERROR] [blockswap/]: Unknown replacement block 'minecraft:non_existent' in 'id_remapper' for 'mod:invalid_block', skipping
+[19:56:52] [Test worker/ERROR] [blockswap/]: Failed to parse config json string, using default
 com.google.gson.JsonSyntaxException: com.google.gson.stream.MalformedJsonException: Expected ':' at line 1 column 9 path $.this
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.internal.Streams.parse(Streams.java:61) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.JsonParser.parseReader(JsonParser.java:102) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.JsonParser.parseReader(JsonParser.java:70) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.JsonParser.parseString(JsonParser.java:51) ~[gson-2.10.1.jar:?] {}
-	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.config.BlockSwapConfig.parseJsonString(BlockSwapConfig.java:132) ~[main/:?] {re:mixin,re:classloading}
-	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.BlockSwapUnitTest.testMalformedJsonHandling(BlockSwapUnitTest.java:95) ~[test/:?] {re:classloading}
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?] {}
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?] {}
-	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728) ~[junit-platform-commons-1.10.2.jar:1.10.2] {}
-	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69) ~[junit-jupiter-engine-5.10.2.jar:5.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596) ~[?:?] {}
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596) ~[?:?] {}
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54) ~[junit-platform-engine-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198) ~[junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169) ~[junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93) ~[junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58) ~[junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141) [junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57) [junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103) [junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85) [junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47) [junit-platform-launcher-1.10.2.jar:1.10.2] {}
-	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:124) [gradle-testing-junit-platform-8.10.2.jar:8.10.2] {}
-	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$000(JUnitPlatformTestClassProcessor.java:99) [gradle-testing-junit-platform-8.10.2.jar:8.10.2] {}
-	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:94) [gradle-testing-junit-platform-8.10.2.jar:8.10.2] {}
-	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:63) [gradle-testing-base-infrastructure-8.10.2.jar:8.10.2] {}
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?] {}
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?] {}
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36) [gradle-messaging-8.10.2.jar:8.10.2] {}
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-8.10.2.jar:8.10.2] {}
-	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33) [gradle-messaging-8.10.2.jar:8.10.2] {}
-	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92) [gradle-messaging-8.10.2.jar:8.10.2] {}
+See https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json
+	at com.google.gson.internal.Streams.parse(Streams.java:58) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.JsonParser.parseReader(JsonParser.java:144) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.JsonParser.parseReader(JsonParser.java:110) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.JsonParser.parseString(JsonParser.java:92) ~[gson-2.13.2.jar:?] {}
+	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.config.BlockSwapConfig.parseJsonString(BlockSwapConfig.java:132) [main/:?] {}
+	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.BlockSwapUnitTest.testMalformedJsonHandling(BlockSwapUnitTest.java:95) [main/:?] {}
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[?:?] {}
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565) ~[?:?] {}
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:787) [junit-platform-commons-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:478) [junit-platform-commons-1.13.4.jar:1.13.4] {}
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:161) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:152) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:91) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:112) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:94) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:93) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:87) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$4(TestMethodTestDescriptor.java:221) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:217) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:159) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:157) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604) [?:?] {}
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:161) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604) [?:?] {}
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:161) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:230) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:204) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:172) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:101) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:64) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:150) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:63) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:109) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:91) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:135) [gradle-testing-junit-platform-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$000(JUnitPlatformTestClassProcessor.java:110) [gradle-testing-junit-platform-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:104) [gradle-testing-junit-platform-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:64) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[?:?] {}
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565) ~[?:?] {}
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92) [gradle-messaging-9.1.0.jar:9.1.0] {}
 	at jdk.proxy1/jdk.proxy1.$Proxy4.stop(Unknown Source) [?:?] {}
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:200) [gradle-testing-base-infrastructure-8.10.2.jar:8.10.2] {}
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:132) [gradle-testing-base-infrastructure-8.10.2.jar:8.10.2] {}
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103) [gradle-testing-base-infrastructure-8.10.2.jar:8.10.2] {}
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63) [gradle-testing-base-infrastructure-8.10.2.jar:8.10.2] {}
-	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56) [gradle-worker-main-8.10.2.jar:8.10.2] {}
-	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:121) [gradle-worker-main-8.10.2.jar:8.10.2] {}
-	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:71) [gradle-worker-main-8.10.2.jar:8.10.2] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:194) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56) [gradle-worker-main-9.1.0.jar:9.1.0] {}
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122) [gradle-worker-main-9.1.0.jar:9.1.0] {}
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72) [gradle-worker-main-9.1.0.jar:9.1.0] {}
 	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69) [gradle-worker.jar:?] {}
 	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74) [gradle-worker.jar:?] {}
 Caused by: com.google.gson.stream.MalformedJsonException: Expected ':' at line 1 column 9 path $.this
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.stream.JsonReader.syntaxError(JsonReader.java:1659) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.stream.JsonReader.doPeek(JsonReader.java:539) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.stream.JsonReader.peek(JsonReader.java:433) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.internal.bind.TypeAdapters$28.read(TypeAdapters.java:786) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.internal.bind.TypeAdapters$28.read(TypeAdapters.java:725) ~[gson-2.10.1.jar:?] {}
-	at MC-BOOTSTRAP/com.google.gson@2.10.1/com.google.gson.internal.Streams.parse(Streams.java:49) ~[gson-2.10.1.jar:?] {}
-	... 86 more
-[23:24:11] [Test worker/ERROR] [blockswap/]: Unknown block 'minecraft:this_block_does_not_exist_at_all' in 'swapper' old block entry, skipping
-[23:24:11] [Test worker/ERROR] [blockswap/]: Unknown block 'minecraft:this_block_also_does_not_exist' in 'swapper' new block entry, skipping
-Verified 49 chunks from region files. Zero granite found, diorite occurrences: 254
+See https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json
+	at com.google.gson.stream.JsonReader.syntaxError(JsonReader.java:1817) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.stream.JsonReader.doPeek(JsonReader.java:659) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.stream.JsonReader.peek(JsonReader.java:547) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.internal.bind.JsonElementTypeAdapter.read(JsonElementTypeAdapter.java:102) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.internal.bind.JsonElementTypeAdapter.read(JsonElementTypeAdapter.java:35) ~[gson-2.13.2.jar:?] {}
+	at com.google.gson.internal.Streams.parse(Streams.java:46) ~[gson-2.13.2.jar:?] {}
+	... 92 more
+[19:56:52] [Test worker/ERROR] [ne.ne.fm.lo.ClassLoadingGuardian/]: Illegal load of protected class corgitaco/blockswap/BlockSwapUnitTest into class-loader jdk.internal.loader.ClassLoaders$AppClassLoader@5bc2b487
+java.lang.Throwable: null
+	at net.neoforged.fml.loading.ClassLoadingGuardian$1.transform(ClassLoadingGuardian.java:64) [loader-11.0.15.jar:11.0] {}
+	at java.instrument/sun.instrument.TransformerManager.transform(TransformerManager.java:188) [?:?] {}
+	at java.instrument/sun.instrument.InstrumentationImpl.transform(InstrumentationImpl.java:594) [?:?] {}
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method) [?:?] {}
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:962) [?:?] {}
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:144) [?:?] {}
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:776) [?:?] {}
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:691) [?:?] {}
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:620) [?:?] {}
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:578) [?:?] {}
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:490) [?:?] {}
+	at java.base/java.lang.Class.forName0(Native Method) [?:?] {}
+	at java.base/java.lang.Class.forName(Class.java:547) [?:?] {}
+	at org.apache.logging.log4j.util.LoaderUtil.loadClass(LoaderUtil.java:212) [log4j-api-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer.lambda$static$1(ThrowableExtendedStackTraceRenderer.java:196) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.loadClass(ThrowableExtendedStackTraceRenderer.java:180) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.createClassResourceInfoByName(ThrowableExtendedStackTraceRenderer.java:166) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.ofThrowable(ThrowableExtendedStackTraceRenderer.java:96) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.access$000(ThrowableExtendedStackTraceRenderer.java:81) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer.createContext(ThrowableExtendedStackTraceRenderer.java:43) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer.createContext(ThrowableExtendedStackTraceRenderer.java:34) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowableStackTraceRenderer.renderThrowable(ThrowableStackTraceRenderer.java:55) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.pattern.ThrowablePatternConverter.format(ThrowablePatternConverter.java:130) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.layout.PatternLayout$NoFormatPatternSerializer.toSerializable(PatternLayout.java:354) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.layout.PatternLayout.toText(PatternLayout.java:251) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.layout.PatternLayout.encode(PatternLayout.java:237) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.layout.PatternLayout.encode(PatternLayout.java:57) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.directEncodeEvent(AbstractOutputStreamAppender.java:227) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.tryAppend(AbstractOutputStreamAppender.java:220) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.append(AbstractOutputStreamAppender.java:211) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender.append(RollingRandomAccessFileAppender.java:275) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.AppenderControl.tryCallAppender(AppenderControl.java:160) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppender0(AppenderControl.java:133) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppenderPreventRecursion(AppenderControl.java:124) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppender(AppenderControl.java:88) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.LoggerConfig.callAppenders(LoggerConfig.java:711) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.LoggerConfig.processLogEvent(LoggerConfig.java:669) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:645) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:589) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.config.AwaitCompletionReliabilityStrategy.log(AwaitCompletionReliabilityStrategy.java:92) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.core.Logger.log(Logger.java:187) [log4j-core-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.spi.AbstractLogger.tryLogMessage(AbstractLogger.java:2970) [log4j-api-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessageTrackRecursion(AbstractLogger.java:2922) [log4j-api-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessageSafely(AbstractLogger.java:2904) [log4j-api-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessage(AbstractLogger.java:2648) [log4j-api-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.spi.AbstractLogger.logIfEnabled(AbstractLogger.java:2587) [log4j-api-2.25.2.jar:2.25.2] {}
+	at org.apache.logging.log4j.spi.AbstractLogger.error(AbstractLogger.java:824) [log4j-api-2.25.2.jar:2.25.2] {}
+	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.config.BlockSwapConfig.parseJsonString(BlockSwapConfig.java:218) [main/:?] {}
+	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.BlockSwapUnitTest.testMalformedJsonHandling(BlockSwapUnitTest.java:95) [main/:?] {}
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[?:?] {}
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565) ~[?:?] {}
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:787) [junit-platform-commons-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:478) [junit-platform-commons-1.13.4.jar:1.13.4] {}
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:161) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:152) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:91) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:112) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:94) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:93) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:87) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$4(TestMethodTestDescriptor.java:221) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:217) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:159) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70) [junit-jupiter-engine-5.13.4.jar:5.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:157) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604) [?:?] {}
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:161) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604) [?:?] {}
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:161) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54) [junit-platform-engine-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:230) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:204) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:172) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:101) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:64) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:150) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:63) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:109) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:91) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47) [junit-platform-launcher-1.13.4.jar:1.13.4] {}
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:135) [gradle-testing-junit-platform-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$000(JUnitPlatformTestClassProcessor.java:110) [gradle-testing-junit-platform-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:104) [gradle-testing-junit-platform-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:64) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[?:?] {}
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565) ~[?:?] {}
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92) [gradle-messaging-9.1.0.jar:9.1.0] {}
+	at jdk.proxy1/jdk.proxy1.$Proxy4.stop(Unknown Source) [?:?] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:194) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63) [gradle-testing-base-infrastructure-9.1.0.jar:9.1.0] {}
+	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56) [gradle-worker-main-9.1.0.jar:9.1.0] {}
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122) [gradle-worker-main-9.1.0.jar:9.1.0] {}
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72) [gradle-worker-main-9.1.0.jar:9.1.0] {}
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69) [gradle-worker.jar:?] {}
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74) [gradle-worker.jar:?] {}
+[19:56:52] [Test worker/ERROR] [blockswap/]: Unknown block 'minecraft:this_block_does_not_exist_at_all' in 'swapper' old block entry, skipping
+[19:56:52] [Test worker/ERROR] [blockswap/]: Unknown block 'minecraft:this_block_also_does_not_exist' in 'swapper' new block entry, skipping
+Verified 529 chunks from region files. Zero granite found, diorite occurrences: 68
 ]]></system-out>
-  <system-err><![CDATA[]]></system-err>
+  <system-err><![CDATA[2026-10-20T17:56:52.374649800Z Test worker ERROR Recursive call to appender File
+2026-10-20T17:56:52.393649500Z Test worker ERROR An exception occurred processing Appender File
+org.apache.logging.log4j.core.appender.AppenderLoggingException: java.lang.LinkageError: loader 'app' attempted duplicate class definition for corgitaco.blockswap.BlockSwapUnitTest. (corgitaco.blockswap.BlockSwapUnitTest is in unnamed module of loader 'app')
+	at org.apache.logging.log4j.core.config.AppenderControl.tryCallAppender(AppenderControl.java:164)
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppender0(AppenderControl.java:133)
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppenderPreventRecursion(AppenderControl.java:124)
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppender(AppenderControl.java:88)
+	at org.apache.logging.log4j.core.config.LoggerConfig.callAppenders(LoggerConfig.java:711)
+	at org.apache.logging.log4j.core.config.LoggerConfig.processLogEvent(LoggerConfig.java:669)
+	at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:645)
+	at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:589)
+	at org.apache.logging.log4j.core.config.AwaitCompletionReliabilityStrategy.log(AwaitCompletionReliabilityStrategy.java:92)
+	at org.apache.logging.log4j.core.Logger.log(Logger.java:187)
+	at org.apache.logging.log4j.spi.AbstractLogger.tryLogMessage(AbstractLogger.java:2970)
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessageTrackRecursion(AbstractLogger.java:2922)
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessageSafely(AbstractLogger.java:2904)
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessage(AbstractLogger.java:2648)
+	at org.apache.logging.log4j.spi.AbstractLogger.logIfEnabled(AbstractLogger.java:2587)
+	at org.apache.logging.log4j.spi.AbstractLogger.error(AbstractLogger.java:824)
+	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.config.BlockSwapConfig.parseJsonString(BlockSwapConfig.java:218)
+	at TRANSFORMER/blockswap@6.0.0.0/corgitaco.blockswap.BlockSwapUnitTest.testMalformedJsonHandling(BlockSwapUnitTest.java:95)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:787)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:478)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:161)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:152)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:91)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:112)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:94)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:93)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:87)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$4(TestMethodTestDescriptor.java:221)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:217)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:159)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:157)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:161)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:161)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:147)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:145)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:101)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:230)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:204)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:172)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:101)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:64)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:150)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:63)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:109)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:91)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:135)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$000(JUnitPlatformTestClassProcessor.java:110)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:104)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:64)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92)
+	at jdk.proxy1/jdk.proxy1.$Proxy4.stop(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker$3.run(TestWorker.java:194)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
+	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+Caused by: java.lang.LinkageError: loader 'app' attempted duplicate class definition for corgitaco.blockswap.BlockSwapUnitTest. (corgitaco.blockswap.BlockSwapUnitTest is in unnamed module of loader 'app')
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:962)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:144)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:776)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:691)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:620)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:578)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:490)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:547)
+	at org.apache.logging.log4j.util.LoaderUtil.loadClass(LoaderUtil.java:212)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer.lambda$static$1(ThrowableExtendedStackTraceRenderer.java:196)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.loadClass(ThrowableExtendedStackTraceRenderer.java:180)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.createClassResourceInfoByName(ThrowableExtendedStackTraceRenderer.java:166)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.ofThrowable(ThrowableExtendedStackTraceRenderer.java:96)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer$ExtendedContext.access$000(ThrowableExtendedStackTraceRenderer.java:81)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer.createContext(ThrowableExtendedStackTraceRenderer.java:43)
+	at org.apache.logging.log4j.core.pattern.ThrowableExtendedStackTraceRenderer.createContext(ThrowableExtendedStackTraceRenderer.java:34)
+	at org.apache.logging.log4j.core.pattern.ThrowableStackTraceRenderer.renderThrowable(ThrowableStackTraceRenderer.java:55)
+	at org.apache.logging.log4j.core.pattern.ThrowablePatternConverter.format(ThrowablePatternConverter.java:130)
+	at org.apache.logging.log4j.core.layout.PatternLayout$NoFormatPatternSerializer.toSerializable(PatternLayout.java:354)
+	at org.apache.logging.log4j.core.layout.PatternLayout.toText(PatternLayout.java:251)
+	at org.apache.logging.log4j.core.layout.PatternLayout.encode(PatternLayout.java:237)
+	at org.apache.logging.log4j.core.layout.PatternLayout.encode(PatternLayout.java:57)
+	at org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.directEncodeEvent(AbstractOutputStreamAppender.java:227)
+	at org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.tryAppend(AbstractOutputStreamAppender.java:220)
+	at org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender.append(AbstractOutputStreamAppender.java:211)
+	at org.apache.logging.log4j.core.appender.RollingRandomAccessFileAppender.append(RollingRandomAccessFileAppender.java:275)
+	at org.apache.logging.log4j.core.config.AppenderControl.tryCallAppender(AppenderControl.java:160)
+	... 104 more
+
+]]></system-err>
 </testsuite>

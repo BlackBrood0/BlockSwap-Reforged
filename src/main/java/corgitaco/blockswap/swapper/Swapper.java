@@ -18,7 +18,7 @@ import corgitaco.blockswap.util.TickHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -95,9 +95,9 @@ public class Swapper {
                             for (int y = 0; y < 16; y++) {
                                 for (int z = 0; z < 16; z++) {
                                     BlockPos blockPos = new BlockPos(
-                                            SectionPos.sectionToBlockCoord(chunk.getPos().x) + x,
+                                            SectionPos.sectionToBlockCoord(chunk.getPos().x()) + x,
                                             bottomY + y,
-                                            SectionPos.sectionToBlockCoord(chunk.getPos().z) + z
+                                            SectionPos.sectionToBlockCoord(chunk.getPos().z()) + z
                                     );
                                     BlockState state = world.getBlockState(blockPos);
                                     if (config.contains(state)) {
@@ -126,7 +126,7 @@ public class Swapper {
 
         Path knownStatesDir = configDir.resolve("known_states");
         allKnownStates.forEach((block, states) -> {
-            ResourceLocation key = BuiltInRegistries.BLOCK.getKey(block);
+            Identifier key = BuiltInRegistries.BLOCK.getKey(block);
             Path filePath = knownStatesDir.resolve(key.getNamespace()).resolve(key.getPath() + ".json5");
             if (!Files.exists(filePath)) {
                 try {
