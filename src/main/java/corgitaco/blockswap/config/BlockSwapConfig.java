@@ -32,9 +32,19 @@ public record BlockSwapConfig(
         Map<Block, Block> blockBlockMap,
         Map<BlockState, BlockState> blockStateBlockStateMap,
         boolean retroGen,
-        boolean generateAllKnownStates
+        boolean generateAllKnownStates,
+        boolean onlySwapNaturalGeneration
 ) {
-    public static final BlockSwapConfig DEFAULT = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), false, true);
+    public static final BlockSwapConfig DEFAULT = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), false, true, false);
+
+    public BlockSwapConfig(
+            Map<Block, Block> blockBlockMap,
+            Map<BlockState, BlockState> blockStateBlockStateMap,
+            boolean retroGen,
+            boolean generateAllKnownStates
+    ) {
+        this(blockBlockMap, blockStateBlockStateMap, retroGen, generateAllKnownStates, false);
+    }
 
     private static final Jankson JANKSON = Jankson.builder().build();
     private static BlockSwapConfig CONFIG = null;
@@ -74,7 +84,13 @@ public record BlockSwapConfig(
             	"retro_gen": false,
 
             	// Generates all block states for all blocks in the registry.
-            	"generate_all_known_states": true
+            	"generate_all_known_states": true,
+
+            	// When true, swaps apply ONLY during world generation (terrain, features, structures).
+            	// Live block placement (players, pistons, dispensers, falling blocks, fluids, commands) will NOT be swapped.
+            	// Chunks generated while this option is true contain swapped blocks; chunks generated before stay as they are.
+            	// Does not retroactively change existing chunks.
+            	"onlySwapNaturalGeneration": false
             }
             """;
 
@@ -188,8 +204,14 @@ public record BlockSwapConfig(
                 }
             }
 
-            boolean retroGen = root.has("retro_gen") && root.get("retro_gen").getAsBoolean();
-            boolean generateAllKnownStates = !root.has("generate_all_known_states") || root.get("generate_all_known_states").getAsBoolean();
+            boolean retroGen = parseBoolean(root, "retro_gen", false);
+            boolean generateAllKnownStates = parseBoolean(root, "generate_all_known_states", true);
+            boolean onlySwapNaturalGeneration = false;
+            if (root.has("onlySwapNaturalGeneration")) {
+                onlySwapNaturalGeneration = parseBoolean(root, "onlySwapNaturalGeneration", false);
+            } else if (root.has("only_swap_natural_generation")) {
+                onlySwapNaturalGeneration = parseBoolean(root, "only_swap_natural_generation", false);
+            }
 
             // Verify circular references
             Map<Block, Block> verifiedBlockMap = new IdentityHashMap<>();
@@ -213,11 +235,24 @@ public record BlockSwapConfig(
                 }
             }
 
-            return new BlockSwapConfig(verifiedBlockMap, verifiedStateMap, retroGen, generateAllKnownStates);
+            return new BlockSwapConfig(verifiedBlockMap, verifiedStateMap, retroGen, generateAllKnownStates, onlySwapNaturalGeneration);
         } catch (Exception e) {
             BlockSwap.LOGGER.error("Failed to parse config json string, using default", e);
             return DEFAULT;
         }
+    }
+
+    private static boolean parseBoolean(com.google.gson.JsonObject root, String key, boolean defaultValue) {
+        if (!root.has(key)) {
+            return defaultValue;
+        }
+        JsonElement elem = root.get(key);
+        if (elem.isJsonPrimitive() && elem.getAsJsonPrimitive().isBoolean()) {
+            return elem.getAsBoolean();
+        }
+        BlockSwap.LOGGER.error("Invalid value for '{}': expected boolean (true/false), found '{}'. Falling back to default ({}).",
+                key, elem, defaultValue);
+        return defaultValue;
     }
 
     private static Optional<Block> parseBlock(String id) {
@@ -256,6 +291,7 @@ public record BlockSwapConfig(
 
         root.addProperty("retro_gen", retroGen);
         root.addProperty("generate_all_known_states", generateAllKnownStates);
+        root.addProperty("onlySwapNaturalGeneration", onlySwapNaturalGeneration);
 
         return root.toString();
     }

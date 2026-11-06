@@ -190,5 +190,149 @@ public class BlockSwapGameTests {
 
         helper.succeed();
     }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
+    public static void testOptionTrueLivePlacementGraniteNotSwapped(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+        helper.setBlock(pos, Blocks.GRANITE);
+        helper.assertBlockPresent(Blocks.GRANITE, pos);
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
+    public static void testOptionTrueLivePlacementAxisNotSwapped(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.OAK_LOG, Blocks.BIRCH_LOG);
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+        BlockState oakLogZ = Blocks.OAK_LOG.defaultBlockState().setValue(RotatedPillarBlock.AXIS, Direction.Axis.Z);
+        helper.setBlock(pos, oakLogZ);
+
+        BlockState result = helper.getBlockState(pos);
+        if (!result.is(Blocks.OAK_LOG)) {
+            helper.fail("Expected oak_log to remain unswapped, but got " + result.getBlock(), pos);
+        }
+        if (result.getValue(RotatedPillarBlock.AXIS) != Direction.Axis.Z) {
+            helper.fail("Expected axis Z on unswapped oak_log, but got " + result.getValue(RotatedPillarBlock.AXIS), pos);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
+    public static void testOptionTrueLivePlacementStairsNotSwapped(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.OAK_STAIRS, Blocks.BIRCH_STAIRS);
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+        BlockState oakStairs = Blocks.OAK_STAIRS.defaultBlockState()
+                .setValue(StairBlock.FACING, Direction.SOUTH)
+                .setValue(StairBlock.HALF, Half.TOP)
+                .setValue(StairBlock.SHAPE, StairsShape.INNER_LEFT);
+        helper.setBlock(pos, oakStairs);
+
+        BlockState result = helper.getBlockState(pos);
+        if (!result.is(Blocks.OAK_STAIRS)) {
+            helper.fail("Expected oak_stairs to remain unswapped, but got " + result.getBlock(), pos);
+        }
+        if (result.getValue(StairBlock.FACING) != Direction.SOUTH) {
+            helper.fail("Expected facing SOUTH on oak_stairs", pos);
+        }
+        if (result.getValue(StairBlock.HALF) != Half.TOP) {
+            helper.fail("Expected half TOP on oak_stairs", pos);
+        }
+        if (result.getValue(StairBlock.SHAPE) != StairsShape.INNER_LEFT) {
+            helper.fail("Expected shape INNER_LEFT on oak_stairs", pos);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
+    public static void testOptionTrueDynamicToggleBetweenWorldLoads(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
+        BlockPos pos = new BlockPos(1, 1, 1);
+
+        // 1. Natural only = false -> live placement is swapped
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, false));
+        helper.setBlock(pos, Blocks.GRANITE);
+        helper.assertBlockPresent(Blocks.DIORITE, pos);
+
+        // 2. Natural only = true -> live placement is NOT swapped
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+        helper.setBlock(pos, Blocks.GRANITE);
+        helper.assertBlockPresent(Blocks.GRANITE, pos);
+
+        // 3. Natural only = false again -> live placement is swapped again
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, false));
+        helper.setBlock(pos, Blocks.GRANITE);
+        helper.assertBlockPresent(Blocks.DIORITE, pos);
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
+    public static void testWorldGenChunkSectionSwappingWhenNaturalOnlyIsTrue(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+
+        // When Swapper.isLivePlacement() is false (as in chunk generator / WorldGenRegion):
+        // Direct LevelChunkSection.setBlockState will swap Granite to Diorite!
+        BlockPos absolutePos = helper.absolutePos(new BlockPos(1, 1, 1));
+        net.minecraft.world.level.chunk.LevelChunk chunk = helper.getLevel().getChunkAt(absolutePos);
+        int sectionIndex = chunk.getSectionIndex(absolutePos.getY());
+        net.minecraft.world.level.chunk.LevelChunkSection section = chunk.getSection(sectionIndex);
+
+        int localX = absolutePos.getX() & 15;
+        int localY = absolutePos.getY() & 15;
+        int localZ = absolutePos.getZ() & 15;
+
+        // Ensure we are in worldgen context (not in live placement)
+        Swapper.resetLivePlacement();
+
+        section.setBlockState(localX, localY, localZ, Blocks.GRANITE.defaultBlockState(), false);
+        BlockState placedState = section.getBlockState(localX, localY, localZ);
+
+        if (!placedState.is(Blocks.DIORITE)) {
+            helper.fail("Expected direct chunk section placement to be swapped to diorite during worldgen context, but got " + placedState.getBlock(), new BlockPos(1, 1, 1));
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "pistonBatch")
+    public static void testOptionTruePistonPushingBlock(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+
+        // Place piston at (1, 1, 1) facing East, Granite at (2, 1, 1), Air at (3, 1, 1)
+        BlockPos pistonPos = new BlockPos(1, 1, 1);
+        BlockPos granitePos = new BlockPos(2, 1, 1);
+        BlockPos destinationPos = new BlockPos(3, 1, 1);
+
+        helper.setBlock(destinationPos, Blocks.AIR);
+        helper.setBlock(granitePos, Blocks.GRANITE);
+        helper.setBlock(pistonPos, Blocks.PISTON.defaultBlockState().setValue(net.minecraft.world.level.block.piston.PistonBaseBlock.FACING, Direction.EAST));
+
+        // Activate piston by placing redstone block adjacent to it at (1, 2, 1)
+        BlockPos redstonePos = new BlockPos(1, 2, 1);
+        helper.setBlock(redstonePos, Blocks.REDSTONE_BLOCK);
+
+        // Wait a few ticks for piston extension
+        helper.runAtTickTime(15, () -> {
+            BlockState pushedBlock = helper.getBlockState(destinationPos);
+            if (!pushedBlock.is(Blocks.GRANITE)) {
+                helper.fail("Expected granite moved by piston to remain granite, but was " + pushedBlock.getBlock(), destinationPos);
+            }
+            helper.succeed();
+        });
+    }
 }
 

@@ -10,6 +10,7 @@ When swapping blocks, the mod automatically detects and preserves shared block s
 
 - World Generation Replacement: Replaces blocks during chunk generation so targeted blocks never appear in newly created terrain.
 - Live Placement Replacement: Intercepts block placement in real time (players, commands, dispensers) and immediately places the replacement block.
+- Natural Generation Only Mode: Optional setting to restrict swapping exclusively to world generation (terrain, features, structures), leaving all live block placement unchanged.
 - Automatic Property Remapping: Automatically maps matching block state properties across blocks (for example: oak log axis to birch log axis, or stairs facing/half/shape).
 - Explicit State Swapping: Configure exact state-to-state mappings with defined properties in the state swapper table.
 - Standalone JSON5 Support: Config files support single-line comments, multi-line comments, and trailing commas without requiring external library mods.
@@ -76,7 +77,12 @@ Configuration files are located in `config/blockswap/`:
   "retro_gen": false,
 
   // Generates reference files for all block states in config/blockswap/known_states/
-  "generate_all_known_states": false
+  "generate_all_known_states": false,
+
+  // When true, swaps apply ONLY during world generation (terrain, features, structures).
+  // Live placement (players, pistons, dispensers, falling blocks, fluids, commands) will NOT be swapped.
+  // Does not retroactively change existing chunks.
+  "onlySwapNaturalGeneration": false
 }
 ```
 

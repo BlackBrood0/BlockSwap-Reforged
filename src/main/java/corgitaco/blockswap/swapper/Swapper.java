@@ -36,6 +36,26 @@ import java.util.TreeMap;
 
 public class Swapper {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final ThreadLocal<int[]> LIVE_DEPTH = ThreadLocal.withInitial(() -> new int[1]);
+
+    public static void enterLivePlacement() {
+        LIVE_DEPTH.get()[0]++;
+    }
+
+    public static void exitLivePlacement() {
+        int[] depth = LIVE_DEPTH.get();
+        if (depth[0] > 0) {
+            depth[0]--;
+        }
+    }
+
+    public static boolean isLivePlacement() {
+        return LIVE_DEPTH.get()[0] > 0;
+    }
+
+    public static void resetLivePlacement() {
+        LIVE_DEPTH.get()[0] = 0;
+    }
 
     public static BlockState remapState(BlockState incomingState) {
         BlockSwapConfig config = BlockSwapConfig.getConfig(false);

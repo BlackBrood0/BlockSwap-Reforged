@@ -10,14 +10,37 @@ package corgitaco.blockswap.mixin;
 
 import corgitaco.blockswap.config.BlockSwapConfig;
 import corgitaco.blockswap.swapper.Swapper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Level.class)
 public abstract class MixinLevel {
+
+    @Inject(
+            method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
+            at = @At("HEAD")
+    )
+    private void beforeSetBlock(BlockPos pos, BlockState state, int flags, int recursionLeft, CallbackInfoReturnable<Boolean> cir) {
+        if (BlockSwapConfig.getConfig(false).onlySwapNaturalGeneration()) {
+            Swapper.enterLivePlacement();
+        }
+    }
+
+    @Inject(
+            method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
+            at = @At("RETURN")
+    )
+    private void afterSetBlock(BlockPos pos, BlockState state, int flags, int recursionLeft, CallbackInfoReturnable<Boolean> cir) {
+        if (BlockSwapConfig.getConfig(false).onlySwapNaturalGeneration()) {
+            Swapper.exitLivePlacement();
+        }
+    }
 
     @ModifyVariable(
             method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
@@ -26,7 +49,8 @@ public abstract class MixinLevel {
             ordinal = 0
     )
     private BlockState replaceSetBlockState(BlockState state) {
-        if (BlockSwapConfig.getConfig(false).contains(state)) {
+        BlockSwapConfig config = BlockSwapConfig.getConfig(false);
+        if (!config.onlySwapNaturalGeneration() && config.contains(state)) {
             return Swapper.remapState(state);
         }
         return state;

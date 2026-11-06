@@ -83,8 +83,127 @@ public class BlockSwapUnitTest {
         assertNotNull(config);
         assertTrue(config.retroGen());
         assertFalse(config.generateAllKnownStates());
+        assertFalse(config.onlySwapNaturalGeneration());
         assertEquals(Blocks.DIRT, config.blockBlockMap().get(Blocks.COARSE_DIRT));
         assertEquals(Blocks.BIRCH_LOG, config.blockBlockMap().get(Blocks.OAK_LOG));
+    }
+
+    @Test
+    public void testOnlySwapNaturalGenerationConfigParsing() {
+        // 1. Explicitly true
+        String jsonTrue = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "onlySwapNaturalGeneration": true
+                }
+                """;
+        BlockSwapConfig configTrue = BlockSwapConfig.parseJsonString(jsonTrue);
+        assertNotNull(configTrue);
+        assertTrue(configTrue.onlySwapNaturalGeneration());
+
+        // 2. Snake case variant
+        String jsonSnake = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "only_swap_natural_generation": true
+                }
+                """;
+        BlockSwapConfig configSnake = BlockSwapConfig.parseJsonString(jsonSnake);
+        assertNotNull(configSnake);
+        assertTrue(configSnake.onlySwapNaturalGeneration());
+
+        // 3. Explicitly false
+        String jsonFalse = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "onlySwapNaturalGeneration": false
+                }
+                """;
+        BlockSwapConfig configFalse = BlockSwapConfig.parseJsonString(jsonFalse);
+        assertNotNull(configFalse);
+        assertFalse(configFalse.onlySwapNaturalGeneration());
+
+        // 4. Absent key defaults to false
+        String jsonAbsent = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    }
+                }
+                """;
+        BlockSwapConfig configAbsent = BlockSwapConfig.parseJsonString(jsonAbsent);
+        assertNotNull(configAbsent);
+        assertFalse(configAbsent.onlySwapNaturalGeneration());
+
+        // 5. Invalid string value falls back to false without crashing
+        String jsonInvalidString = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "onlySwapNaturalGeneration": "notABooleanValue"
+                }
+                """;
+        BlockSwapConfig configInvalid = BlockSwapConfig.parseJsonString(jsonInvalidString);
+        assertNotNull(configInvalid);
+        assertFalse(configInvalid.onlySwapNaturalGeneration());
+        assertEquals(Blocks.DIORITE, configInvalid.blockBlockMap().get(Blocks.GRANITE));
+
+        // 6. Invalid object value falls back to false without crashing
+        String jsonInvalidObj = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "onlySwapNaturalGeneration": { "invalid": true }
+                }
+                """;
+        BlockSwapConfig configInvalidObj = BlockSwapConfig.parseJsonString(jsonInvalidObj);
+        assertNotNull(configInvalidObj);
+        assertFalse(configInvalidObj.onlySwapNaturalGeneration());
+    }
+
+    @Test
+    public void testLivePlacementTracker() {
+        Swapper.resetLivePlacement();
+        assertFalse(Swapper.isLivePlacement());
+
+        Swapper.enterLivePlacement();
+        assertTrue(Swapper.isLivePlacement());
+
+        // Nested call
+        Swapper.enterLivePlacement();
+        assertTrue(Swapper.isLivePlacement());
+
+        Swapper.exitLivePlacement();
+        assertTrue(Swapper.isLivePlacement());
+
+        Swapper.exitLivePlacement();
+        assertFalse(Swapper.isLivePlacement());
+
+        // Extra exit does not underflow
+        Swapper.exitLivePlacement();
+        assertFalse(Swapper.isLivePlacement());
+    }
+
+    @Test
+    public void testSerializationRoundTripWithOnlyNaturalGen() {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
+        BlockSwapConfig config = new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true);
+
+        String json = config.toJsonString();
+        assertTrue(json.contains("\"onlySwapNaturalGeneration\":true"));
+
+        BlockSwapConfig parsed = BlockSwapConfig.parseJsonString(json);
+        assertTrue(parsed.onlySwapNaturalGeneration());
+        assertEquals(Blocks.DIORITE, parsed.blockBlockMap().get(Blocks.GRANITE));
     }
 
     @Test

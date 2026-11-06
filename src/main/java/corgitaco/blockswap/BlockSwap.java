@@ -65,6 +65,7 @@ public class BlockSwap {
 
     private void registerGameTests(final RegisterGameTestsEvent event) {
         event.register(BlockSwapGameTests.class);
+        event.register(corgitaco.blockswap.gametest.BlockSwapBenchmark.class);
     }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
