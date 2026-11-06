@@ -339,6 +339,20 @@ public class BlockSwapUnitTest {
         int dioriteFoundCount = 0;
         try (java.nio.file.DirectoryStream<Path> stream = Files.newDirectoryStream(regionDir, "*.mca")) {
             for (Path mcaFile : stream) {
+                // Skip region files generated for GameTest structures at extreme coordinates (|rx| > 100 or |rz| > 100)
+                String fileName = mcaFile.getFileName().toString();
+                String[] parts = fileName.split("\\.");
+                if (parts.length >= 3) {
+                    try {
+                        int rx = Integer.parseInt(parts[1]);
+                        int rz = Integer.parseInt(parts[2]);
+                        if (Math.abs(rx) > 100 || Math.abs(rz) > 100) {
+                            continue;
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+
                 try (net.minecraft.world.level.chunk.storage.RegionFile regionFile = new net.minecraft.world.level.chunk.storage.RegionFile(
                         new net.minecraft.world.level.chunk.storage.RegionStorageInfo("world", Level.OVERWORLD, "region"),
                         mcaFile,
