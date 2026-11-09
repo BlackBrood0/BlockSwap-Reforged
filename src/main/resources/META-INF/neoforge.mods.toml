@@ -1,17 +1,18 @@
 modLoader="javafml"
 loaderVersion="[4,)"
 license="LGPL-3.0"
-issueTrackerURL="https://github.com/CorgiTaco-MC/Block-Swap/issues"
+issueTrackerURL="https://github.com/BlackBrood0/BlockSwap-Reforged/issues"
 
 [[mods]]
 modId="blockswap"
 version="${mod_version}"
 displayName="Block Swap"
-displayURL="https://github.com/CorgiTaco-MC/Block-Swap/"
+displayURL="https://github.com/BlackBrood0/BlockSwap-Reforged"
 logoFile="assets/blockswap/blockswap.png"
-authors="Corgi Taco"
+authors="${mod_author}"
+credits="Original Block Swap by CorgiTaco"
 description='''
-Simply replaces one block with another.
+${mod_description}
 '''
 
 [[mixins]]
