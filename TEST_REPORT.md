@@ -48,8 +48,10 @@
 - Existing Configs Without New Key:
   - Existing config files lacking `"onlySwapNaturalGeneration"` deserialize with `false`.
   - Verified by `testOnlySwapNaturalGenerationConfigParsing` and dedicated server startup with legacy `block_swap.json5`.
-- Case Resilience:
-  - Both camelCase (`"onlySwapNaturalGeneration"`) and snake_case (`"only_swap_natural_generation"`) are recognized.
+- Case & Alias Resilience:
+  - Both camelCase (`"onlySwapNaturalGeneration"`), snake_case (`"only_swap_natural_generation"`), and aliases (`"naturalOnly"`, `"onlyNaturalGeneration"`, `"only_natural_gen"`) are recognized.
+- Forgiving Type Parsing:
+  - String booleans (`"true"`, `"false"`, `"yes"`, `"no"`), numbers (`1`, `0`), and native JSON booleans are correctly parsed.
 - Invalid Value Handling:
   - Non-boolean values (e.g. string `"notABooleanValue"`, object `{"invalid": true}`) log a clear error message:
     `[ERROR] Invalid value for 'onlySwapNaturalGeneration': expected boolean (true/false), found ... Falling back to default (false).`
@@ -61,8 +63,8 @@
 ## 5. Automated Test Suites
 
 ### JUnit Unit Tests (`corgitaco.blockswap.BlockSwapUnitTest`)
-Executed via `./gradlew test`. 14 of 14 tests passed in 0.049s.
-1. `testOnlySwapNaturalGenerationConfigParsing`: Validates true, false, snake_case, absent default, and invalid value fallback.
+Executed via `./gradlew test`. 15 of 15 tests passed.
+1. `testOnlySwapNaturalGenerationConfigParsing`: Validates true, false, snake_case, aliases, string booleans, absent default, and invalid value fallback.
 2. `testLivePlacementTracker`: Validates re-entrant depth counter enter/exit/reset behavior in `Swapper`.
 3. `testSerializationRoundTripWithOnlyNaturalGen`: Validates JSON serialization and deserialization round-trip.
 4. `testValidJson5ConfigParsing`: Validates JSON5 comments and structure.
@@ -78,7 +80,7 @@ Executed via `./gradlew test`. 14 of 14 tests passed in 0.049s.
 14. `testWorldGenRegionChunkVerification`: Validates region file parser.
 
 ### NeoForge GameTests (`corgitaco.blockswap.gametest.BlockSwapGameTests`)
-Executed via `./gradlew runGameTestServer`. 15 of 15 tests passed in 6.1s.
+Executed via `./gradlew runGameTestServer`. 16 of 16 tests passed in 6.2s.
 1. `testLivePlacementGraniteToDiorite`: Live placement swaps under default config.
 2. `testAxisPropertyRemapping`: Log axis preserved during live swap.
 3. `testStairsPropertyRemapping`: Stair facing/half/shape preserved during live swap.
@@ -87,13 +89,14 @@ Executed via `./gradlew runGameTestServer`. 15 of 15 tests passed in 6.1s.
 6. `testUnmappedBlockRemainsUnchanged`: Unmapped blocks stay intact.
 7. `testEmptyConfigChangesNothing`: Empty config leaves blocks unchanged.
 8. `testConfigReload`: Rule reloads on world reload without game restart.
-9. `testOptionTrueLivePlacementGraniteNotSwapped`: Granite stays Granite when `onlySwapNaturalGeneration = true`.
-10. `testOptionTrueLivePlacementAxisNotSwapped`: Oak Log axis stays unswapped when `onlySwapNaturalGeneration = true`.
-11. `testOptionTrueLivePlacementStairsNotSwapped`: Oak Stairs stay unswapped when `onlySwapNaturalGeneration = true`.
-12. `testOptionTrueDynamicToggleBetweenWorldLoads`: Dynamic toggle between false -> true -> false takes immediate effect.
-13. `testWorldGenChunkSectionSwappingWhenNaturalOnlyIsTrue`: Direct chunk section placement swaps during worldgen context.
-14. `testOptionTruePistonPushingBlock`: Block pushed by piston stays unswapped when `onlySwapNaturalGeneration = true`.
-15. `BlockSwapBenchmark.runAllBenchmarks`: Automated benchmark suite executed and recorded.
+9. `testPlayerPlaceAtGraniteNotSwapped`: Survival player holding Granite uses placeAt to place block; block stays Granite when `onlySwapNaturalGeneration = true`.
+10. `testOptionTrueLivePlacementGraniteNotSwapped`: Granite stays Granite when `onlySwapNaturalGeneration = true`.
+11. `testOptionTrueLivePlacementAxisNotSwapped`: Oak Log axis stays unswapped when `onlySwapNaturalGeneration = true`.
+12. `testOptionTrueLivePlacementStairsNotSwapped`: Oak Stairs stay unswapped when `onlySwapNaturalGeneration = true`.
+13. `testOptionTrueDynamicToggleBetweenWorldLoads`: Dynamic toggle between false -> true -> false takes immediate effect.
+14. `testWorldGenChunkSectionSwappingWhenNaturalOnlyIsTrue`: Direct chunk section placement swaps during worldgen context.
+15. `testOptionTruePistonPushingBlock`: Block pushed by piston stays unswapped when `onlySwapNaturalGeneration = true`.
+16. `BlockSwapBenchmark.runAllBenchmarks`: Automated benchmark suite executed and recorded.
 
 ---
 
