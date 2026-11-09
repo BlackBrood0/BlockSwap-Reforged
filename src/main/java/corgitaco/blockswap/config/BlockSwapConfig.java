@@ -207,10 +207,16 @@ public record BlockSwapConfig(
             boolean retroGen = parseBoolean(root, "retro_gen", false);
             boolean generateAllKnownStates = parseBoolean(root, "generate_all_known_states", true);
             boolean onlySwapNaturalGeneration = false;
-            if (root.has("onlySwapNaturalGeneration")) {
-                onlySwapNaturalGeneration = parseBoolean(root, "onlySwapNaturalGeneration", false);
-            } else if (root.has("only_swap_natural_generation")) {
-                onlySwapNaturalGeneration = parseBoolean(root, "only_swap_natural_generation", false);
+            for (String key : root.keySet()) {
+                String normalized = key.replace("_", "").replace("-", "").toLowerCase();
+                if (normalized.equals("onlyswapnaturalgeneration")
+                        || normalized.equals("onlynaturalgeneration")
+                        || normalized.equals("onlynaturalgen")
+                        || normalized.equals("naturalonly")
+                        || normalized.equals("naturalgenerationonly")) {
+                    onlySwapNaturalGeneration = parseBoolean(root, key, false);
+                    break;
+                }
             }
 
             // Verify circular references
@@ -247,8 +253,23 @@ public record BlockSwapConfig(
             return defaultValue;
         }
         JsonElement elem = root.get(key);
-        if (elem.isJsonPrimitive() && elem.getAsJsonPrimitive().isBoolean()) {
-            return elem.getAsBoolean();
+        if (elem.isJsonPrimitive()) {
+            var prim = elem.getAsJsonPrimitive();
+            if (prim.isBoolean()) {
+                return prim.getAsBoolean();
+            }
+            if (prim.isString()) {
+                String str = prim.getAsString().trim().toLowerCase();
+                if ("true".equals(str) || "1".equals(str) || "yes".equals(str)) {
+                    return true;
+                }
+                if ("false".equals(str) || "0".equals(str) || "no".equals(str)) {
+                    return false;
+                }
+            }
+            if (prim.isNumber()) {
+                return prim.getAsInt() != 0;
+            }
         }
         BlockSwap.LOGGER.error("Invalid value for '{}': expected boolean (true/false), found '{}'. Falling back to default ({}).",
                 key, elem, defaultValue);

@@ -48,10 +48,16 @@ public class BlockSwap {
         NeoForge.EVENT_BUS.addListener(this::onServerAboutToStart);
         NeoForge.EVENT_BUS.addListener(this::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(this::onDatapackSync);
+        NeoForge.EVENT_BUS.addListener(this::onServerTickPre);
 
         // Initial config read
-        BlockSwapConfig.getConfig(true);
+        BlockSwapConfig config = BlockSwapConfig.getConfig(true);
         MissingBlockIDsConfig.getConfig(true);
+        LOGGER.info("BlockSwap initial configuration loaded: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
+    }
+
+    private void onServerTickPre(net.neoforged.neoforge.event.tick.ServerTickEvent.Pre event) {
+        Swapper.resetLivePlacement();
     }
 
     private void registerPayloadHandlers(final RegisterPayloadHandlersEvent event) {
@@ -72,6 +78,7 @@ public class BlockSwap {
         LOGGER.info("Reloading BlockSwap configuration on world load");
         BlockSwapConfig config = BlockSwapConfig.getConfig(true);
         MissingBlockIDsConfig.getConfig(true);
+        LOGGER.info("BlockSwap configuration loaded: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
         Swapper.generateAllKnownStates(CONFIG_PATH);
     }
 
@@ -85,7 +92,10 @@ public class BlockSwap {
         if (event.getPlayer() != null) {
             syncConfigToPlayer(event.getPlayer());
         } else {
-            String json = BlockSwapConfig.getConfig(false).toJsonString();
+            BlockSwapConfig config = BlockSwapConfig.getConfig(true);
+            MissingBlockIDsConfig.getConfig(true);
+            LOGGER.info("BlockSwap configuration reloaded via datapack sync: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
+            String json = config.toJsonString();
             PacketDistributor.sendToAllPlayers(new ClientConfigSyncPayload(json));
         }
     }

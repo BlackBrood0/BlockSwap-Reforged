@@ -203,6 +203,25 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "playerBatch")
+    public static void testPlayerPlaceAtGraniteNotSwapped(GameTestHelper helper) {
+        IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
+        blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
+        BlockSwapConfig.getConfig(new BlockSwapConfig(blockMap, new IdentityHashMap<>(), false, false, true));
+
+        BlockPos basePos = new BlockPos(1, 1, 1);
+        BlockPos placePos = new BlockPos(1, 2, 1);
+        helper.setBlock(basePos, Blocks.STONE);
+        helper.setBlock(placePos, Blocks.AIR);
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GRANITE);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+        helper.placeAt(player, stack, basePos, Direction.UP);
+
+        helper.assertBlockPresent(Blocks.GRANITE, placePos);
+        helper.succeed();
+    }
+
     @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
     public static void testOptionTrueLivePlacementAxisNotSwapped(GameTestHelper helper) {
         IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();

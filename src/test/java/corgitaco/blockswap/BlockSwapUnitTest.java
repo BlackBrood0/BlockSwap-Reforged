@@ -167,6 +167,32 @@ public class BlockSwapUnitTest {
         BlockSwapConfig configInvalidObj = BlockSwapConfig.parseJsonString(jsonInvalidObj);
         assertNotNull(configInvalidObj);
         assertFalse(configInvalidObj.onlySwapNaturalGeneration());
+
+        // 7. String representation "true"
+        String jsonStringTrue = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "onlySwapNaturalGeneration": "true"
+                }
+                """;
+        BlockSwapConfig configStringTrue = BlockSwapConfig.parseJsonString(jsonStringTrue);
+        assertNotNull(configStringTrue);
+        assertTrue(configStringTrue.onlySwapNaturalGeneration());
+
+        // 8. Key alias "naturalOnly"
+        String jsonAlias = """
+                {
+                    "swapper": {
+                        "minecraft:granite": "minecraft:diorite"
+                    },
+                    "naturalOnly": true
+                }
+                """;
+        BlockSwapConfig configAlias = BlockSwapConfig.parseJsonString(jsonAlias);
+        assertNotNull(configAlias);
+        assertTrue(configAlias.onlySwapNaturalGeneration());
     }
 
     @Test
