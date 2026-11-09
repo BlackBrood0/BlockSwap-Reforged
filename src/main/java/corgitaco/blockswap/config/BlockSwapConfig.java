@@ -15,8 +15,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import corgitaco.blockswap.BlockSwap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -24,18 +27,31 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public record BlockSwapConfig(
         Map<Block, Block> blockBlockMap,
         Map<BlockState, BlockState> blockStateBlockStateMap,
+        Map<TagKey<Block>, Block> tagBlockMap,
         boolean retroGen,
         boolean generateAllKnownStates,
         boolean onlySwapNaturalGeneration
 ) {
-    public static final BlockSwapConfig DEFAULT = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), false, true, false);
+    public static final BlockSwapConfig DEFAULT = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), Collections.emptyMap(), false, true, false);
+
+    public BlockSwapConfig(
+            Map<Block, Block> blockBlockMap,
+            Map<BlockState, BlockState> blockStateBlockStateMap,
+            boolean retroGen,
+            boolean generateAllKnownStates,
+            boolean onlySwapNaturalGeneration
+    ) {
+        this(blockBlockMap, blockStateBlockStateMap, Collections.emptyMap(), retroGen, generateAllKnownStates, onlySwapNaturalGeneration);
+    }
 
     public BlockSwapConfig(
             Map<Block, Block> blockBlockMap,
@@ -43,7 +59,7 @@ public record BlockSwapConfig(
             boolean retroGen,
             boolean generateAllKnownStates
     ) {
-        this(blockBlockMap, blockStateBlockStateMap, retroGen, generateAllKnownStates, false);
+        this(blockBlockMap, blockStateBlockStateMap, Collections.emptyMap(), retroGen, generateAllKnownStates, false);
     }
 
     private static final Jankson JANKSON = Jankson.builder().build();
@@ -51,9 +67,10 @@ public record BlockSwapConfig(
 
     private static final String DEFAULT_CONFIG_TEMPLATE = """
             {
-            	// A map of blocks that specifies what the "old" block is and what its "new" block is.
+            	// A map of blocks and tags that specifies what the "old" block/tag is and what its "new" block is.
             	// Example:
             	// "swapper": {
+            	// 	"#c:ores": "minecraft:infested_cobblestone",
             	// 	"minecraft:coarse_dirt": "minecraft:dirt",
             	// 	"minecraft:diamond_block": "minecraft:emerald_block"
             	// }
@@ -96,6 +113,37 @@ public record BlockSwapConfig(
 
     public boolean contains(BlockState state) {
         return blockBlockMap.containsKey(state.getBlock()) || blockStateBlockStateMap.containsKey(state);
+    }
+
+    public BlockSwapConfig resolveTags() {
+        if (tagBlockMap.isEmpty()) {
+            return this;
+        }
+        Map<Block, Block> updatedBlockMap = new IdentityHashMap<>();
+        for (Map.Entry<TagKey<Block>, Block> entry : tagBlockMap.entrySet()) {
+            var tagSet = BuiltInRegistries.BLOCK.getTag(entry.getKey());
+            if (tagSet.isPresent()) {
+                for (Holder<Block> holder : tagSet.get()) {
+                    updatedBlockMap.put(holder.value(), entry.getValue());
+                }
+            } else {
+                BlockSwap.LOGGER.debug("Tag '{}' in 'swapper' is not yet bound or contains no blocks.", entry.getKey().location());
+            }
+        }
+        updatedBlockMap.putAll(blockBlockMap);
+
+        Map<Block, Block> verifiedBlockMap = new IdentityHashMap<>();
+        for (Map.Entry<Block, Block> entry : updatedBlockMap.entrySet()) {
+            if (updatedBlockMap.containsKey(entry.getValue())) {
+                BlockSwap.LOGGER.error("Detected circular BLOCK reference in 'swapper'! Block '{}' maps to '{}' which is also swapped.",
+                        BuiltInRegistries.BLOCK.getKey(entry.getKey()),
+                        BuiltInRegistries.BLOCK.getKey(entry.getValue()));
+            } else {
+                verifiedBlockMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return new BlockSwapConfig(verifiedBlockMap, blockStateBlockStateMap, tagBlockMap, retroGen, generateAllKnownStates, onlySwapNaturalGeneration);
     }
 
     public static BlockSwapConfig getConfig(BlockSwapConfig serverConfig) {
@@ -153,30 +201,59 @@ public record BlockSwapConfig(
             com.google.gson.JsonObject root = rootElement.getAsJsonObject();
 
             Map<Block, Block> rawBlockMap = new IdentityHashMap<>();
+            Map<TagKey<Block>, Block> rawTagMap = new LinkedHashMap<>();
+
             if (root.has("swapper") && root.get("swapper").isJsonObject()) {
                 com.google.gson.JsonObject swapperObj = root.getAsJsonObject("swapper");
+                Map<TagKey<Block>, Block> pendingTags = new LinkedHashMap<>();
+                Map<Block, Block> directBlocks = new IdentityHashMap<>();
+
                 for (Map.Entry<String, JsonElement> entry : swapperObj.entrySet()) {
-                    String oldId = entry.getKey();
+                    String oldId = entry.getKey().trim();
                     if (!entry.getValue().isJsonPrimitive()) {
                         BlockSwap.LOGGER.error("Invalid value in 'swapper' for key '{}': expected string block ID", oldId);
                         continue;
                     }
-                    String newId = entry.getValue().getAsString();
+                    String newId = entry.getValue().getAsString().trim();
 
-                    Optional<Block> oldBlock = parseBlock(oldId);
                     Optional<Block> newBlock = parseBlock(newId);
-
-                    if (oldBlock.isEmpty()) {
-                        BlockSwap.LOGGER.error("Unknown block '{}' in 'swapper' old block entry, skipping", oldId);
-                        continue;
-                    }
                     if (newBlock.isEmpty()) {
-                        BlockSwap.LOGGER.error("Unknown block '{}' in 'swapper' new block entry, skipping", newId);
+                        BlockSwap.LOGGER.error("Unknown target block '{}' in 'swapper' entry, skipping", newId);
                         continue;
                     }
 
-                    rawBlockMap.put(oldBlock.get(), newBlock.get());
+                    if (oldId.startsWith("#")) {
+                        String tagString = oldId.substring(1);
+                        try {
+                            ResourceLocation tagRl = ResourceLocation.parse(tagString);
+                            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, tagRl);
+                            pendingTags.put(tagKey, newBlock.get());
+                        } catch (Exception e) {
+                            BlockSwap.LOGGER.error("Invalid tag identifier '{}' in 'swapper': {}", oldId, e.getMessage());
+                        }
+                    } else {
+                        Optional<Block> oldBlock = parseBlock(oldId);
+                        if (oldBlock.isEmpty()) {
+                            BlockSwap.LOGGER.error("Unknown block '{}' in 'swapper' old block entry, skipping", oldId);
+                            continue;
+                        }
+                        directBlocks.put(oldBlock.get(), newBlock.get());
+                    }
                 }
+
+                rawTagMap.putAll(pendingTags);
+
+                // Expand tags if bound
+                for (Map.Entry<TagKey<Block>, Block> tagEntry : pendingTags.entrySet()) {
+                    var tagSet = BuiltInRegistries.BLOCK.getTag(tagEntry.getKey());
+                    if (tagSet.isPresent()) {
+                        for (Holder<Block> holder : tagSet.get()) {
+                            rawBlockMap.put(holder.value(), tagEntry.getValue());
+                        }
+                    }
+                }
+                // Direct blocks overwrite tag blocks
+                rawBlockMap.putAll(directBlocks);
             }
 
             Map<BlockState, BlockState> rawStateMap = new IdentityHashMap<>();
@@ -241,7 +318,7 @@ public record BlockSwapConfig(
                 }
             }
 
-            return new BlockSwapConfig(verifiedBlockMap, verifiedStateMap, retroGen, generateAllKnownStates, onlySwapNaturalGeneration);
+            return new BlockSwapConfig(verifiedBlockMap, verifiedStateMap, rawTagMap, retroGen, generateAllKnownStates, onlySwapNaturalGeneration);
         } catch (Exception e) {
             BlockSwap.LOGGER.error("Failed to parse config json string, using default", e);
             return DEFAULT;
@@ -291,6 +368,10 @@ public record BlockSwapConfig(
         com.google.gson.JsonObject root = new com.google.gson.JsonObject();
 
         com.google.gson.JsonObject swapper = new com.google.gson.JsonObject();
+        for (Map.Entry<TagKey<Block>, Block> entry : tagBlockMap.entrySet()) {
+            swapper.addProperty("#" + entry.getKey().location().toString(),
+                    BuiltInRegistries.BLOCK.getKey(entry.getValue()).toString());
+        }
         for (Map.Entry<Block, Block> entry : blockBlockMap.entrySet()) {
             swapper.addProperty(BuiltInRegistries.BLOCK.getKey(entry.getKey()).toString(),
                     BuiltInRegistries.BLOCK.getKey(entry.getValue()).toString());

@@ -353,5 +353,56 @@ public class BlockSwapGameTests {
             helper.succeed();
         });
     }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "tagBatch")
+    public static void testTagSwapperOreReplacement(GameTestHelper helper) {
+        String json = """
+                {
+                    "swapper": {
+                        "#c:ores": "minecraft:infested_cobblestone"
+                    },
+                    "onlySwapNaturalGeneration": false
+                }
+                """;
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json).resolveTags();
+        BlockSwapConfig.getConfig(config);
+
+        BlockPos pos = new BlockPos(1, 1, 1);
+        helper.setBlock(pos, Blocks.COAL_ORE);
+        helper.assertBlockPresent(Blocks.INFESTED_COBBLESTONE, pos);
+
+        helper.setBlock(pos, Blocks.DIAMOND_ORE);
+        helper.assertBlockPresent(Blocks.INFESTED_COBBLESTONE, pos);
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "tagBatch")
+    public static void testTagSwapperWithOnlyNaturalGenPlayerPlacement(GameTestHelper helper) {
+        String json = """
+                {
+                    "swapper": {
+                        "#c:ores": "minecraft:infested_cobblestone"
+                    },
+                    "onlySwapNaturalGeneration": true
+                }
+                """;
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json).resolveTags();
+        BlockSwapConfig.getConfig(config);
+
+        BlockPos basePos = new BlockPos(1, 1, 1);
+        BlockPos placePos = new BlockPos(1, 2, 1);
+        helper.setBlock(basePos, Blocks.STONE);
+        helper.setBlock(placePos, Blocks.AIR);
+
+        net.minecraft.world.entity.player.Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.world.item.ItemStack stack = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_ORE);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+        helper.placeAt(player, stack, basePos, Direction.UP);
+
+        // Under onlySwapNaturalGeneration = true, player placed diamond ore stays diamond ore!
+        helper.assertBlockPresent(Blocks.DIAMOND_ORE, placePos);
+        helper.succeed();
+    }
 }
 

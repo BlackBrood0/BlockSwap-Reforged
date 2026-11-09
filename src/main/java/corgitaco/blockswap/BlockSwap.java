@@ -49,11 +49,24 @@ public class BlockSwap {
         NeoForge.EVENT_BUS.addListener(this::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(this::onDatapackSync);
         NeoForge.EVENT_BUS.addListener(this::onServerTickPre);
+        NeoForge.EVENT_BUS.addListener(this::onTagsUpdated);
 
         // Initial config read
         BlockSwapConfig config = BlockSwapConfig.getConfig(true);
         MissingBlockIDsConfig.getConfig(true);
         LOGGER.info("BlockSwap initial configuration loaded: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
+    }
+
+    private void onTagsUpdated(net.neoforged.neoforge.event.TagsUpdatedEvent event) {
+        if (event.shouldUpdateStaticData()) {
+            LOGGER.info("Tags updated, resolving BlockSwap tag mappings");
+            BlockSwapConfig current = BlockSwapConfig.getConfig(false);
+            if (!current.tagBlockMap().isEmpty()) {
+                BlockSwapConfig resolved = current.resolveTags();
+                BlockSwapConfig.getConfig(resolved);
+                LOGGER.info("BlockSwap tag mappings resolved: {} total block swaps active", resolved.blockBlockMap().size());
+            }
+        }
     }
 
     private void onServerTickPre(net.neoforged.neoforge.event.tick.ServerTickEvent.Pre event) {
@@ -76,9 +89,11 @@ public class BlockSwap {
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
         LOGGER.info("Reloading BlockSwap configuration on world load");
-        BlockSwapConfig config = BlockSwapConfig.getConfig(true);
+        BlockSwapConfig config = BlockSwapConfig.getConfig(true).resolveTags();
+        BlockSwapConfig.getConfig(config);
         MissingBlockIDsConfig.getConfig(true);
-        LOGGER.info("BlockSwap configuration loaded: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
+        LOGGER.info("BlockSwap configuration loaded: {} block swaps active, onlySwapNaturalGeneration = {}",
+                config.blockBlockMap().size(), config.onlySwapNaturalGeneration());
         Swapper.generateAllKnownStates(CONFIG_PATH);
     }
 
@@ -92,9 +107,11 @@ public class BlockSwap {
         if (event.getPlayer() != null) {
             syncConfigToPlayer(event.getPlayer());
         } else {
-            BlockSwapConfig config = BlockSwapConfig.getConfig(true);
+            BlockSwapConfig config = BlockSwapConfig.getConfig(true).resolveTags();
+            BlockSwapConfig.getConfig(config);
             MissingBlockIDsConfig.getConfig(true);
-            LOGGER.info("BlockSwap configuration reloaded via datapack sync: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
+            LOGGER.info("BlockSwap configuration reloaded via datapack sync: {} block swaps active, onlySwapNaturalGeneration = {}",
+                    config.blockBlockMap().size(), config.onlySwapNaturalGeneration());
             String json = config.toJsonString();
             PacketDistributor.sendToAllPlayers(new ClientConfigSyncPayload(json));
         }

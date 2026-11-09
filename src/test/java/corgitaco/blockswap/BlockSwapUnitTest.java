@@ -27,12 +27,19 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -474,6 +481,68 @@ public class BlockSwapUnitTest {
         } finally {
             Files.deleteIfExists(tempConfigFile);
         }
+    }
+
+    @Test
+    public void testTagParsingAndResolution() {
+        TagKey<net.minecraft.world.level.block.Block> testTag = TagKey.create(Registries.BLOCK, ResourceLocation.parse("minecraft:coal_ores"));
+        BuiltInRegistries.BLOCK.bindTags(Map.of(testTag, List.of(
+                BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.COAL_ORE),
+                BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.DEEPSLATE_COAL_ORE)
+        )));
+
+        String json = """
+                {
+                    "swapper": {
+                        "#minecraft:coal_ores": "minecraft:infested_cobblestone"
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json).resolveTags();
+        assertNotNull(config);
+        assertEquals(Blocks.INFESTED_COBBLESTONE, config.blockBlockMap().get(Blocks.COAL_ORE));
+        assertEquals(Blocks.INFESTED_COBBLESTONE, config.blockBlockMap().get(Blocks.DEEPSLATE_COAL_ORE));
+    }
+
+    @Test
+    public void testTagWithDirectBlockOverride() {
+        TagKey<net.minecraft.world.level.block.Block> testTag = TagKey.create(Registries.BLOCK, ResourceLocation.parse("minecraft:coal_ores"));
+        BuiltInRegistries.BLOCK.bindTags(Map.of(testTag, List.of(
+                BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.COAL_ORE),
+                BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.DEEPSLATE_COAL_ORE)
+        )));
+
+        String json = """
+                {
+                    "swapper": {
+                        "#minecraft:coal_ores": "minecraft:infested_cobblestone",
+                        "minecraft:coal_ore": "minecraft:diorite"
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json).resolveTags();
+        assertNotNull(config);
+        // Direct block override takes precedence
+        assertEquals(Blocks.DIORITE, config.blockBlockMap().get(Blocks.COAL_ORE));
+        // Other blocks in the tag receive the tag mapping
+        assertEquals(Blocks.INFESTED_COBBLESTONE, config.blockBlockMap().get(Blocks.DEEPSLATE_COAL_ORE));
+    }
+
+    @Test
+    public void testTagSerializationRoundTrip() {
+        TagKey<net.minecraft.world.level.block.Block> testTag = TagKey.create(Registries.BLOCK, ResourceLocation.parse("c:ores"));
+        Map<TagKey<net.minecraft.world.level.block.Block>, net.minecraft.world.level.block.Block> tagMap = new LinkedHashMap<>();
+        tagMap.put(testTag, Blocks.INFESTED_COBBLESTONE);
+
+        BlockSwapConfig config = new BlockSwapConfig(new IdentityHashMap<>(), new IdentityHashMap<>(), tagMap, false, false, true);
+        String json = config.toJsonString();
+        assertTrue(json.contains("\"#c:ores\":\"minecraft:infested_cobblestone\""));
+
+        BlockSwapConfig parsed = BlockSwapConfig.parseJsonString(json);
+        assertTrue(parsed.tagBlockMap().containsKey(testTag));
+        assertEquals(Blocks.INFESTED_COBBLESTONE, parsed.tagBlockMap().get(testTag));
     }
 }
 

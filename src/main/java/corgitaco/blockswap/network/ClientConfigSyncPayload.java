@@ -34,7 +34,7 @@ public record ClientConfigSyncPayload(String configJson) implements CustomPacket
     public static void handle(ClientConfigSyncPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             BlockSwap.LOGGER.info("Received server BlockSwap configuration");
-            BlockSwapConfig.getConfig(BlockSwapConfig.parseJsonString(payload.configJson()));
+            BlockSwapConfig.getConfig(BlockSwapConfig.parseJsonString(payload.configJson()).resolveTags());
         });
     }
 }
