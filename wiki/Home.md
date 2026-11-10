@@ -53,7 +53,7 @@ Block Swap Reforged allows server administrators, modpack creators, and players 
 
 ## Project Information
 
-- **Current Version**: `1.2-beta` (NeoForge 1.21.1)
+- **Current Version**: `2.0` (`v2.0`) (NeoForge 1.21.1)
 - **Maintainer**: BlackBrood0
 - **Original Mod**: Block Swap by CorgiTaco
 - **License**: GNU Lesser General Public License v3.0 (LGPL-3.0)
