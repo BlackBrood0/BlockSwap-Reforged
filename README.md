@@ -1,31 +1,48 @@
 # Block Swap Reforged
 
-Block Swap Reforged is a Minecraft mod for NeoForge 1.21.1 that replaces one block with another based on configuration, both during world generation and when blocks are placed in an active world.
+Block Swap Reforged is a Minecraft mod for NeoForge 1.21.1 that replaces blocks and block tags with other blocks or block states, both during natural world generation and during live in-game placement.
 
 When swapping blocks, the mod automatically detects and preserves shared block state properties (such as rotation axis, facing direction, half, shape, and waterlogged status) from the original block to the replacement block.
 
 ---
 
+## Documentation and Wiki
+
+Complete documentation, guides, and tutorials are available in the repository **[Wiki](wiki/Home.md)**:
+
+- **[Wiki Home](wiki/Home.md)** - Overview and table of contents
+- **[Getting Started](wiki/Getting-Started.md)** - Requirements, installation for client and dedicated server
+- **[Configuration Guide](wiki/Configuration-Guide.md)** - Complete reference for `block_swap.json5`
+- **[Block and Tag Swapping](wiki/Block-and-Tag-Swapping.md)** - Block mappings, `#tag` syntax, and property preservation
+- **[Dimension Conditions](wiki/Dimension-Conditions.md)** - Global and per-swap dimension filtering
+- **[Natural Gen vs Live Placement](wiki/Natural-Generation-vs-Live-Placement.md)** - Worldgen vs live placement, `onlySwapNaturalGeneration` mode
+- **[Commands and Hot Reload](wiki/Commands-and-Hot-Reload.md)** - The `/blockswap reload` command and live multiplayer sync
+- **[State Swapper and Known States](wiki/State-Swapper-and-Known-States.md)** - Advanced state transformations and property reference files
+- **[Missing Block IDs Repair](wiki/Missing-Block-IDs-Repair.md)** - Salvaging corrupted chunks with `missing_block_ids.json5`
+- **[Developer and Build Guide](wiki/Developer-and-Build-Guide.md)** - Compiling from source, Mixin architecture, unit tests, and GameTests
+
+---
+
 ## Features
 
-- World Generation Replacement: Replaces blocks during chunk generation so targeted blocks never appear in newly created terrain.
-- Live Placement Replacement: Intercepts block placement in real time (players, commands, dispensers) and immediately places the replacement block.
-- Natural Generation Only Mode: Optional setting to restrict swapping exclusively to world generation (terrain, features, structures), leaving all live block placement unchanged.
-- Automatic Property Remapping: Automatically maps matching block state properties across blocks (for example: oak log axis to birch log axis, or stairs facing/half/shape).
-- Explicit State Swapping: Configure exact state-to-state mappings with defined properties in the state swapper table.
-- Standalone JSON5 Support: Config files support single-line comments, multi-line comments, and trailing commas without requiring external library mods.
-- Server to Client Sync: The server automatically sends active swap rules to connecting clients to keep client prediction in sync.
-- World Load Reloading: Configuration reloads automatically every time a world or server loads, allowing on-the-fly updates.
-- Retro-Generation: Optional setting to scan and update blocks in existing, already-generated chunks.
-- Missing Block ID Repair: Utility configuration to remap missing or removed mod block IDs in chunk storage palettes.
+- **Block and Tag Replacement**: Map individual blocks or entire tags (e.g. `"#c:ores": "minecraft:infested_cobblestone"`).
+- **Dimension Conditions**: Restrict block swaps to specific dimensions (Overworld, Nether, End, or custom dimensions), configured globally or per-swap.
+- **Natural Generation Only Mode (`onlySwapNaturalGeneration`)**: Restrict swaps exclusively to newly generated chunks, leaving all player building, pistons, dispensers, and falling blocks completely unchanged.
+- **In-Game Hot Reload (`/blockswap reload`)**: Reload placement swap rules live without restarting the server or kicking players, while keeping world generation conditions untouched.
+- **Automatic Property Preservation**: Automatically transfers shared block state properties (such as rotation axis, facing directions, slab types, stair shapes, and waterlogged values) to replacement blocks.
+- **Explicit State Swapping**: Define exact block state configurations with precise properties using the state swapper table.
+- **Standalone JSON5 Support**: Config files support single-line comments (`//`), multi-line comments (`/* */`), and trailing commas with zero external library mods required.
+- **Server to Client Sync**: Dedicated servers automatically send active swap rules to connecting clients to keep prediction in sync.
+- **Retro-Generation**: Optional setting to scan and update blocks in existing, already-generated chunks.
+- **Palette Repair Utility**: Fix worlds with missing or renamed mod blocks using `missing_block_ids.json5`.
 
 ---
 
 ## Requirements
 
-- Minecraft: 1.21.1
-- Mod Loader: NeoForge 21.1.x (tested on 21.1.263+)
-- Java: 21
+- **Minecraft**: `1.21.1`
+- **Mod Loader**: **NeoForge** `21.1.0` or newer (tested on `21.1.263+`)
+- **Java**: **Java 21**
 
 ---
 
@@ -33,56 +50,39 @@ When swapping blocks, the mod automatically detects and preserves shared block s
 
 ### Client
 1. Install NeoForge for Minecraft 1.21.1.
-2. Download the latest `blockswap-neoforge-1.21.1-x.x.x.x.jar` from the Releases page.
-3. Place the jar file into your `.minecraft/mods` directory.
+2. Download the latest `blockswap-neoforge-1.21.1-x.x.x.x.jar` from the [Releases](https://github.com/BlackBrood0/BlockSwap-Reforged/releases) page.
+3. Place the JAR file into your `.minecraft/mods` directory.
 
 ### Dedicated Server
 1. Set up a NeoForge 1.21.1 server.
-2. Place the jar file into the server's `mods` folder.
+2. Place the JAR file into the server's `mods` folder.
 3. Start the server. The configuration folder and default config file will be created automatically.
 
 ---
 
-## Configuration
-
-Configuration files are located in `config/blockswap/`:
-
-- `block_swap.json5`: Primary configuration for block and state replacements.
-- `missing_block_ids.json5`: Secondary configuration for chunk palette ID repairs.
-
-### Example: block_swap.json5
+## Quick Example: `block_swap.json5`
 
 ```json5
 {
-  // Simple block-to-block mappings with automatic property transfer
+  // Restrict all swaps in this file to the Overworld only
+  "dimension": "minecraft:overworld",
+
+  // Set to true if you only want naturally generated chunks to swap
+  "onlySwapNaturalGeneration": false,
+
   "swapper": {
+    // 1. Direct block mapping with automatic property preservation
     "minecraft:granite": "minecraft:diorite",
-    "minecraft:oak_log": "minecraft:birch_log",
-    "minecraft:oak_stairs": "minecraft:birch_stairs"
-  },
 
-  // Explicit state mappings for targeted property configurations
-  "state_swapper": [
-    {
-      "old": {
-        "Name": "minecraft:gold_block"
-      },
-      "new": {
-        "Name": "minecraft:emerald_block"
-      }
+    // 2. Tag replacement (replaces all ores with infested cobblestone)
+    "#c:ores": "minecraft:infested_cobblestone",
+
+    // 3. Per-swap dimension condition (overrides global dimension)
+    "minecraft:netherrack": {
+      "replaceWith": "minecraft:gold_block",
+      "dimension": "minecraft:the_nether"
     }
-  ],
-
-  // Whether blocks in already-generated chunks are scanned and updated
-  "retro_gen": false,
-
-  // Generates reference files for all block states in config/blockswap/known_states/
-  "generate_all_known_states": false,
-
-  // When true, swaps apply ONLY during world generation (terrain, features, structures).
-  // Live placement (players, pistons, dispensers, falling blocks, fluids, commands) will NOT be swapped.
-  // Does not retroactively change existing chunks.
-  "onlySwapNaturalGeneration": false
+  }
 }
 ```
 
@@ -98,21 +98,21 @@ This project uses Gradle with ModDevGradle.
    cd BlockSwap-Reforged
    ```
 
-2. Build the project with Java 21:
+2. Build the project and run verification tests with Java 21:
    ```bash
    ./gradlew build
    ```
 
-3. The compiled jar file will be located in:
+3. The compiled JAR file will be located in:
    ```
-   build/libs/blockswap-neoforge-1.21.1-6.0.0.0.jar
+   build/libs/blockswap-neoforge-1.21.1-1.2-beta.jar
    ```
 
 ---
 
 ## License and Attribution
 
-- Original Author: CorgiTaco
-- Original Project: https://github.com/CorgiTaco-MC/Block-Swap
-- Ported to NeoForge 1.21.1 by BlackBrood0
-- Licensed under the GNU Lesser General Public License v3.0 (LGPL-3.0).
+- **Original Author**: CorgiTaco
+- **Original Project**: https://github.com/CorgiTaco-MC/Block-Swap
+- **Reforged and Maintained by**: BlackBrood0
+- **License**: GNU Lesser General Public License v3.0 (LGPL-3.0)
