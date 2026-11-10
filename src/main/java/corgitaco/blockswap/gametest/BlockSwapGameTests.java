@@ -295,7 +295,7 @@ public class BlockSwapGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID)
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "worldGenBatch")
     public static void testWorldGenChunkSectionSwappingWhenNaturalOnlyIsTrue(GameTestHelper helper) {
         IdentityHashMap<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.Block> blockMap = new IdentityHashMap<>();
         blockMap.put(Blocks.GRANITE, Blocks.DIORITE);
@@ -403,6 +403,101 @@ public class BlockSwapGameTests {
         // Under onlySwapNaturalGeneration = true, player placed diamond ore stays diamond ore!
         helper.assertBlockPresent(Blocks.DIAMOND_ORE, placePos);
         helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "dimensionBatch")
+    public static void testDimensionConditionInGameTest(GameTestHelper helper) {
+        String json = """
+                {
+                    "swapper": {
+                        "minecraft:granite": {
+                            "replaceWith": "minecraft:diorite",
+                            "dimension": "minecraft:overworld"
+                        },
+                        "minecraft:andesite": {
+                            "replaceWith": "minecraft:sponge",
+                            "dimension": "minecraft:the_nether"
+                        }
+                    },
+                    "onlySwapNaturalGeneration": false
+                }
+                """;
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json).resolveTags();
+        BlockSwapConfig.setPlacementConfig(config);
+        BlockSwapConfig.setWorldGenConfig(config);
+
+        BlockPos pos1 = new BlockPos(1, 1, 1);
+        BlockPos pos2 = new BlockPos(1, 2, 1);
+
+        // Granite matches overworld dimension condition -> swaps to diorite
+        helper.setBlock(pos1, Blocks.GRANITE);
+        helper.assertBlockPresent(Blocks.DIORITE, pos1);
+
+        // Andesite requires the_nether -> does NOT swap in overworld gametest
+        helper.setBlock(pos2, Blocks.ANDESITE);
+        helper.assertBlockPresent(Blocks.ANDESITE, pos2);
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", templateNamespace = BlockSwap.MOD_ID, batch = "dimensionBatch")
+    public static void testBlockSwapReloadCommand(GameTestHelper helper) {
+        java.nio.file.Path configFile = BlockSwap.CONFIG_PATH.resolve("block_swap.json5");
+        try {
+            java.nio.file.Files.createDirectories(configFile.getParent());
+
+            // 1. Initial config
+            String initialJson = """
+                    {
+                        "swapper": {
+                            "minecraft:granite": "minecraft:diorite"
+                        },
+                        "onlySwapNaturalGeneration": false
+                    }
+                    """;
+            java.nio.file.Files.writeString(configFile, initialJson);
+
+            BlockSwapConfig initial = BlockSwapConfig.loadFromFile(configFile).resolveTags();
+            BlockSwapConfig.setWorldGenConfig(initial);
+            BlockSwapConfig.setPlacementConfig(initial);
+
+            BlockPos pos = new BlockPos(1, 1, 1);
+            helper.setBlock(pos, Blocks.GRANITE);
+            helper.assertBlockPresent(Blocks.DIORITE, pos);
+
+            // 2. Update config file on disk
+            String updatedJson = """
+                    {
+                        "swapper": {
+                            "minecraft:granite": "minecraft:emerald_block"
+                        },
+                        "onlySwapNaturalGeneration": false
+                    }
+                    """;
+            java.nio.file.Files.writeString(configFile, updatedJson);
+
+            // 3. Execute /blockswap reload command
+            helper.getLevel().getServer().getCommands().performPrefixedCommand(
+                    helper.getLevel().getServer().createCommandSourceStack(),
+                    "blockswap reload"
+            );
+
+            // 4. Verify worldgen config is unchanged
+            net.minecraft.resources.ResourceLocation overworld = helper.getLevel().dimension().location();
+            if (BlockSwapConfig.getWorldGenConfig().getTargetBlock(Blocks.GRANITE, overworld) != Blocks.DIORITE) {
+                helper.fail("Expected worldGenConfig granite target to remain diorite, but was "
+                        + BlockSwapConfig.getWorldGenConfig().getTargetBlock(Blocks.GRANITE, overworld));
+            }
+
+            // 5. Verify placement now swaps granite to emerald_block
+            helper.setBlock(pos, Blocks.AIR);
+            helper.setBlock(pos, Blocks.GRANITE);
+            helper.assertBlockPresent(Blocks.EMERALD_BLOCK, pos);
+
+            helper.succeed();
+        } catch (Exception e) {
+            helper.fail("Exception during reload command gametest: " + e.getMessage());
+        }
     }
 }
 

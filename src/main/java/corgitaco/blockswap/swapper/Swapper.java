@@ -10,8 +10,6 @@ package corgitaco.blockswap.swapper;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import corgitaco.blockswap.BlockSwap;
 import corgitaco.blockswap.config.BlockSwapConfig;
 import corgitaco.blockswap.util.TickHelper;
@@ -29,14 +27,12 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Swapper {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final ThreadLocal<int[]> LIVE_DEPTH = ThreadLocal.withInitial(() -> new int[1]);
+    private static final ThreadLocal<ArrayDeque<ResourceLocation>> DIMENSION_STACK = ThreadLocal.withInitial(ArrayDeque::new);
 
     public static void enterLivePlacement() {
         LIVE_DEPTH.get()[0]++;
@@ -55,18 +51,48 @@ public class Swapper {
 
     public static void resetLivePlacement() {
         LIVE_DEPTH.get()[0] = 0;
+        clearCurrentDimension();
     }
 
-    public static BlockState remapState(BlockState incomingState) {
-        BlockSwapConfig config = BlockSwapConfig.getConfig(false);
+    public static void pushDimension(ResourceLocation dimension) {
+        if (dimension != null) {
+            DIMENSION_STACK.get().push(dimension);
+        }
+    }
 
+    public static void popDimension() {
+        ArrayDeque<ResourceLocation> stack = DIMENSION_STACK.get();
+        if (!stack.isEmpty()) {
+            stack.pop();
+        }
+    }
+
+    public static ResourceLocation getCurrentDimension() {
+        ArrayDeque<ResourceLocation> stack = DIMENSION_STACK.get();
+        return stack.isEmpty() ? null : stack.peek();
+    }
+
+    public static void setCurrentDimension(ResourceLocation dimension) {
+        ArrayDeque<ResourceLocation> stack = DIMENSION_STACK.get();
+        stack.clear();
+        if (dimension != null) {
+            stack.push(dimension);
+        }
+    }
+
+    public static void clearCurrentDimension() {
+        DIMENSION_STACK.get().clear();
+    }
+
+    public static BlockState remapState(BlockState incomingState, ResourceLocation currentDimension, BlockSwapConfig config) {
         // 1. Explicit block state mapping takes precedence
-        if (config.blockStateBlockStateMap().containsKey(incomingState)) {
-            return config.blockStateBlockStateMap().get(incomingState);
+        BlockState stateTarget = config.getTargetState(incomingState, currentDimension);
+        if (stateTarget != null) {
+            return stateTarget;
         }
 
         // 2. Block-to-block mapping with property transfer
-        Block targetBlock = config.blockBlockMap().get(incomingState.getBlock());
+        Block targetBlock = config.getTargetBlock(incomingState.getBlock(), currentDimension);
         if (targetBlock == null) {
             return incomingState;
         }
@@ -81,6 +107,14 @@ public class Swapper {
         }
 
         return newState;
+    }
+
+    public static BlockState remapState(BlockState incomingState, ResourceLocation currentDimension) {
+        return remapState(incomingState, currentDimension, BlockSwapConfig.getConfig(false));
+    }
+
+    public static BlockState remapState(BlockState incomingState) {
+        return remapState(incomingState, getCurrentDimension(), BlockSwapConfig.getConfig(false));
     }
 
     @SuppressWarnings("unchecked")
@@ -102,10 +136,11 @@ public class Swapper {
     }
 
     public static void runRetroGenerator(LevelChunk chunk) {
-        BlockSwapConfig config = BlockSwapConfig.getConfig(false);
+        BlockSwapConfig config = BlockSwapConfig.getWorldGenConfig();
         if (config.retroGen() && chunk instanceof TickHelper tickHelper) {
             if (!tickHelper.markTickDirty()) {
                 Level world = chunk.getLevel();
+                ResourceLocation dim = world != null ? world.dimension().location() : null;
                 LevelChunkSection[] sections = chunk.getSections();
                 for (int i = 0; i < sections.length; i++) {
                     LevelChunkSection section = sections[i];
@@ -120,8 +155,8 @@ public class Swapper {
                                             SectionPos.sectionToBlockCoord(chunk.getPos().z) + z
                                     );
                                     BlockState state = world.getBlockState(blockPos);
-                                    if (config.contains(state)) {
-                                        world.setBlock(blockPos, remapState(state), 2);
+                                    if (config.contains(state, dim)) {
+                                        world.setBlock(blockPos, remapState(state, dim, config), 2);
                                     }
                                 }
                             }
@@ -148,15 +183,17 @@ public class Swapper {
         allKnownStates.forEach((block, states) -> {
             ResourceLocation key = BuiltInRegistries.BLOCK.getKey(block);
             Path filePath = knownStatesDir.resolve(key.getNamespace()).resolve(key.getPath() + ".json5");
-            if (!Files.exists(filePath)) {
-                try {
-                    Files.createDirectories(filePath.getParent());
-                    JsonElement json = BlockState.CODEC.listOf().encodeStart(JsonOps.INSTANCE, states)
-                            .getOrThrow(IllegalStateException::new);
-                    Files.writeString(filePath, GSON.toJson(json));
-                } catch (IOException | IllegalStateException e) {
-                    BlockSwap.LOGGER.error("Failed to generate known states for block {}", key, e);
+            try {
+                Files.createDirectories(filePath.getParent());
+                com.google.gson.JsonArray stateArray = new com.google.gson.JsonArray();
+                for (BlockState state : states) {
+                    BlockState.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, state)
+                            .result()
+                            .ifPresent(stateArray::add);
                 }
+                Files.writeString(filePath, GSON.toJson(stateArray));
+            } catch (IOException e) {
+                BlockSwap.LOGGER.error("Failed to generate known states for {}", key, e);
             }
         });
     }

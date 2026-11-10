@@ -8,11 +8,15 @@
 
 package corgitaco.blockswap;
 
+import com.mojang.brigadier.Command;
 import corgitaco.blockswap.config.BlockSwapConfig;
 import corgitaco.blockswap.config.MissingBlockIDsConfig;
 import corgitaco.blockswap.gametest.BlockSwapGameTests;
 import corgitaco.blockswap.network.ClientConfigSyncPayload;
 import corgitaco.blockswap.swapper.Swapper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -20,7 +24,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -50,6 +56,7 @@ public class BlockSwap {
         NeoForge.EVENT_BUS.addListener(this::onDatapackSync);
         NeoForge.EVENT_BUS.addListener(this::onServerTickPre);
         NeoForge.EVENT_BUS.addListener(this::onTagsUpdated);
+        NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
         // Initial config read
         BlockSwapConfig config = BlockSwapConfig.getConfig(true);
@@ -57,14 +64,41 @@ public class BlockSwap {
         LOGGER.info("BlockSwap initial configuration loaded: onlySwapNaturalGeneration = {}", config.onlySwapNaturalGeneration());
     }
 
-    private void onTagsUpdated(net.neoforged.neoforge.event.TagsUpdatedEvent event) {
+    private void registerCommands(RegisterCommandsEvent event) {
+        event.getDispatcher().register(
+                Commands.literal("blockswap")
+                        .then(Commands.literal("reload")
+                                .requires(source -> source.hasPermission(2) || !source.getServer().isDedicatedServer())
+                                .executes(context -> {
+                                    BlockSwapConfig.reloadPlacementConfig();
+                                    BlockSwapConfig updated = BlockSwapConfig.getPlacementConfig();
+                                    String json = updated.toJsonString();
+                                    PacketDistributor.sendToAllPlayers(new ClientConfigSyncPayload(json));
+                                    context.getSource().sendSuccess(
+                                            () -> Component.literal("[BlockSwap] Placement swap conditions reloaded. World generation conditions remain unchanged.")
+                                                    .withStyle(ChatFormatting.GREEN),
+                                            true
+                                    );
+                                    return Command.SINGLE_SUCCESS;
+                                })
+                        )
+        );
+    }
+
+    private void onTagsUpdated(TagsUpdatedEvent event) {
         if (event.shouldUpdateStaticData()) {
             LOGGER.info("Tags updated, resolving BlockSwap tag mappings");
-            BlockSwapConfig current = BlockSwapConfig.getConfig(false);
-            if (!current.tagBlockMap().isEmpty()) {
-                BlockSwapConfig resolved = current.resolveTags();
-                BlockSwapConfig.getConfig(resolved);
-                LOGGER.info("BlockSwap tag mappings resolved: {} total block swaps active", resolved.blockBlockMap().size());
+            BlockSwapConfig currentPlacement = BlockSwapConfig.getPlacementConfig();
+            if (currentPlacement != null && !currentPlacement.tagRules().isEmpty()) {
+                BlockSwapConfig resolved = currentPlacement.resolveTags();
+                BlockSwapConfig.setPlacementConfig(resolved);
+                LOGGER.info("BlockSwap placement tag mappings resolved: {} total block swaps active", resolved.blockBlockMap().size());
+            }
+            BlockSwapConfig currentWorldGen = BlockSwapConfig.getWorldGenConfig();
+            if (currentWorldGen != null && !currentWorldGen.tagRules().isEmpty()) {
+                BlockSwapConfig resolved = currentWorldGen.resolveTags();
+                BlockSwapConfig.setWorldGenConfig(resolved);
+                LOGGER.info("BlockSwap worldgen tag mappings resolved: {} total block swaps active", resolved.blockBlockMap().size());
             }
         }
     }
@@ -90,7 +124,8 @@ public class BlockSwap {
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
         LOGGER.info("Reloading BlockSwap configuration on world load");
         BlockSwapConfig config = BlockSwapConfig.getConfig(true).resolveTags();
-        BlockSwapConfig.getConfig(config);
+        BlockSwapConfig.setWorldGenConfig(config);
+        BlockSwapConfig.setPlacementConfig(config);
         MissingBlockIDsConfig.getConfig(true);
         LOGGER.info("BlockSwap configuration loaded: {} block swaps active, onlySwapNaturalGeneration = {}",
                 config.blockBlockMap().size(), config.onlySwapNaturalGeneration());
@@ -108,9 +143,9 @@ public class BlockSwap {
             syncConfigToPlayer(event.getPlayer());
         } else {
             BlockSwapConfig config = BlockSwapConfig.getConfig(true).resolveTags();
-            BlockSwapConfig.getConfig(config);
+            BlockSwapConfig.setPlacementConfig(config);
             MissingBlockIDsConfig.getConfig(true);
-            LOGGER.info("BlockSwap configuration reloaded via datapack sync: {} block swaps active, onlySwapNaturalGeneration = {}",
+            LOGGER.info("BlockSwap placement configuration reloaded via datapack sync: {} block swaps active, onlySwapNaturalGeneration = {}",
                     config.blockBlockMap().size(), config.onlySwapNaturalGeneration());
             String json = config.toJsonString();
             PacketDistributor.sendToAllPlayers(new ClientConfigSyncPayload(json));
@@ -118,7 +153,7 @@ public class BlockSwap {
     }
 
     private void syncConfigToPlayer(ServerPlayer player) {
-        String json = BlockSwapConfig.getConfig(false).toJsonString();
+        String json = BlockSwapConfig.getPlacementConfig().toJsonString();
         PacketDistributor.sendToPlayer(player, new ClientConfigSyncPayload(json));
     }
 }

@@ -4,11 +4,15 @@
   "package": "corgitaco.blockswap.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "MixinChunkAccess",
     "MixinChunkHolder",
     "MixinChunkSection",
     "MixinChunkSerializer",
+    "MixinChunkStep",
     "MixinLevel",
-    "MixinLevelChunk"
+    "MixinLevelChunk",
+    "MixinProtoChunk",
+    "MixinWorldGenRegion"
   ],
   "client": [],
   "injectors": {

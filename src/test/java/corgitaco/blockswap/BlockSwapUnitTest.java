@@ -544,5 +544,209 @@ public class BlockSwapUnitTest {
         assertTrue(parsed.tagBlockMap().containsKey(testTag));
         assertEquals(Blocks.INFESTED_COBBLESTONE, parsed.tagBlockMap().get(testTag));
     }
+
+    @Test
+    public void testGlobalDimensionCondition() {
+        String json = """
+                {
+                    "dimension": "minecraft:the_nether",
+                    "swapper": {
+                        "minecraft:dirt": "minecraft:sponge"
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json);
+        assertNotNull(config);
+        assertTrue(config.globalDimensions().contains(ResourceLocation.parse("minecraft:the_nether")));
+
+        ResourceLocation nether = ResourceLocation.parse("minecraft:the_nether");
+        ResourceLocation overworld = ResourceLocation.parse("minecraft:overworld");
+
+        assertTrue(config.contains(Blocks.DIRT.defaultBlockState(), nether));
+        assertFalse(config.contains(Blocks.DIRT.defaultBlockState(), overworld));
+
+        assertEquals(Blocks.SPONGE, config.getTargetBlock(Blocks.DIRT, nether));
+        assertNull(config.getTargetBlock(Blocks.DIRT, overworld));
+
+        BlockState remappedNether = Swapper.remapState(Blocks.DIRT.defaultBlockState(), nether, config);
+        assertEquals(Blocks.SPONGE.defaultBlockState(), remappedNether);
+
+        BlockState remappedOverworld = Swapper.remapState(Blocks.DIRT.defaultBlockState(), overworld, config);
+        assertEquals(Blocks.DIRT.defaultBlockState(), remappedOverworld);
+    }
+
+    @Test
+    public void testPerSwapDimensionCondition() {
+        String json = """
+                {
+                    "swapper": {
+                        "minecraft:dirt": {
+                            "replaceWith": "minecraft:sponge",
+                            "dimension": "minecraft:overworld"
+                        },
+                        "minecraft:stone": {
+                            "replaceWith": "minecraft:granite",
+                            "dimension": "the_nether"
+                        }
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json);
+        assertNotNull(config);
+
+        ResourceLocation overworld = ResourceLocation.parse("minecraft:overworld");
+        ResourceLocation nether = ResourceLocation.parse("minecraft:the_nether");
+
+        // Dirt only swaps in overworld
+        assertTrue(config.contains(Blocks.DIRT.defaultBlockState(), overworld));
+        assertFalse(config.contains(Blocks.DIRT.defaultBlockState(), nether));
+        assertEquals(Blocks.SPONGE, config.getTargetBlock(Blocks.DIRT, overworld));
+        assertNull(config.getTargetBlock(Blocks.DIRT, nether));
+
+        // Stone only swaps in nether
+        assertTrue(config.contains(Blocks.STONE.defaultBlockState(), nether));
+        assertFalse(config.contains(Blocks.STONE.defaultBlockState(), overworld));
+        assertEquals(Blocks.GRANITE, config.getTargetBlock(Blocks.STONE, nether));
+        assertNull(config.getTargetBlock(Blocks.STONE, overworld));
+    }
+
+    @Test
+    public void testMultiDimensionCondition() {
+        String json = """
+                {
+                    "swapper": {
+                        "minecraft:dirt": {
+                            "replaceWith": "minecraft:sponge",
+                            "dimensions": ["minecraft:overworld", "minecraft:the_end"]
+                        }
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json);
+        assertNotNull(config);
+
+        ResourceLocation overworld = ResourceLocation.parse("minecraft:overworld");
+        ResourceLocation end = ResourceLocation.parse("minecraft:the_end");
+        ResourceLocation nether = ResourceLocation.parse("minecraft:the_nether");
+
+        assertTrue(config.contains(Blocks.DIRT.defaultBlockState(), overworld));
+        assertTrue(config.contains(Blocks.DIRT.defaultBlockState(), end));
+        assertFalse(config.contains(Blocks.DIRT.defaultBlockState(), nether));
+    }
+
+    @Test
+    public void testPerSwapOverridesGlobalDimension() {
+        String json = """
+                {
+                    "dimension": "minecraft:overworld",
+                    "swapper": {
+                        "minecraft:dirt": "minecraft:sponge",
+                        "minecraft:stone": {
+                            "replaceWith": "minecraft:granite",
+                            "dimension": "minecraft:the_nether"
+                        }
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json);
+        assertNotNull(config);
+
+        ResourceLocation overworld = ResourceLocation.parse("minecraft:overworld");
+        ResourceLocation nether = ResourceLocation.parse("minecraft:the_nether");
+
+        // Dirt inherits global overworld
+        assertTrue(config.contains(Blocks.DIRT.defaultBlockState(), overworld));
+        assertFalse(config.contains(Blocks.DIRT.defaultBlockState(), nether));
+
+        // Stone overrides to nether
+        assertTrue(config.contains(Blocks.STONE.defaultBlockState(), nether));
+        assertFalse(config.contains(Blocks.STONE.defaultBlockState(), overworld));
+    }
+
+    @Test
+    public void testTagWithDimensionCondition() {
+        TagKey<net.minecraft.world.level.block.Block> testTag = TagKey.create(Registries.BLOCK, ResourceLocation.parse("minecraft:coal_ores"));
+        BuiltInRegistries.BLOCK.bindTags(Map.of(testTag, List.of(
+                BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.COAL_ORE),
+                BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.DEEPSLATE_COAL_ORE)
+        )));
+
+        String json = """
+                {
+                    "swapper": {
+                        "#minecraft:coal_ores": {
+                            "replaceWith": "minecraft:infested_cobblestone",
+                            "dimension": "minecraft:the_nether"
+                        }
+                    }
+                }
+                """;
+
+        BlockSwapConfig config = BlockSwapConfig.parseJsonString(json).resolveTags();
+        assertNotNull(config);
+
+        ResourceLocation nether = ResourceLocation.parse("minecraft:the_nether");
+        ResourceLocation overworld = ResourceLocation.parse("minecraft:overworld");
+
+        assertTrue(config.contains(Blocks.COAL_ORE.defaultBlockState(), nether));
+        assertTrue(config.contains(Blocks.DEEPSLATE_COAL_ORE.defaultBlockState(), nether));
+
+        assertFalse(config.contains(Blocks.COAL_ORE.defaultBlockState(), overworld));
+        assertFalse(config.contains(Blocks.DEEPSLATE_COAL_ORE.defaultBlockState(), overworld));
+    }
+
+    @Test
+    public void testPlacementAndWorldGenConfigSeparationOnReload() throws Exception {
+        Path tempDir = Files.createTempDirectory("blockswap_reload_test");
+        Path originalConfigPath = BlockSwap.CONFIG_PATH;
+        try {
+            BlockSwap.CONFIG_PATH = tempDir;
+
+            // Initial config
+            String initialJson = """
+                    {
+                        "swapper": {
+                            "minecraft:dirt": "minecraft:sponge"
+                        }
+                    }
+                    """;
+            Files.writeString(tempDir.resolve("block_swap.json5"), initialJson);
+
+            BlockSwapConfig initial = BlockSwapConfig.loadFromFile(tempDir.resolve("block_swap.json5"));
+            BlockSwapConfig.setWorldGenConfig(initial);
+            BlockSwapConfig.setPlacementConfig(initial);
+
+            assertEquals(Blocks.SPONGE, BlockSwapConfig.getWorldGenConfig().getTargetBlock(Blocks.DIRT, null));
+            assertEquals(Blocks.SPONGE, BlockSwapConfig.getPlacementConfig().getTargetBlock(Blocks.DIRT, null));
+
+            // User updates config on disk
+            String updatedJson = """
+                    {
+                        "swapper": {
+                            "minecraft:dirt": "minecraft:emerald_block",
+                            "minecraft:stone": "minecraft:diamond_block"
+                        }
+                    }
+                    """;
+            Files.writeString(tempDir.resolve("block_swap.json5"), updatedJson);
+
+            // Execute placement reload (simulate /blockswap reload)
+            BlockSwapConfig.reloadPlacementConfig();
+
+            // WorldGen config must remain UNCHANGED
+            assertEquals(Blocks.SPONGE, BlockSwapConfig.getWorldGenConfig().getTargetBlock(Blocks.DIRT, null));
+            assertNull(BlockSwapConfig.getWorldGenConfig().getTargetBlock(Blocks.STONE, null));
+
+            // Placement config must be RELOADED
+            assertEquals(Blocks.EMERALD_BLOCK, BlockSwapConfig.getPlacementConfig().getTargetBlock(Blocks.DIRT, null));
+            assertEquals(Blocks.DIAMOND_BLOCK, BlockSwapConfig.getPlacementConfig().getTargetBlock(Blocks.STONE, null));
+        } finally {
+            BlockSwap.CONFIG_PATH = originalConfigPath;
+        }
+    }
 }
 

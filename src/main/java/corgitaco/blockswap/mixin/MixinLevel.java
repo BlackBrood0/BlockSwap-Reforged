@@ -11,6 +11,7 @@ package corgitaco.blockswap.mixin;
 import corgitaco.blockswap.config.BlockSwapConfig;
 import corgitaco.blockswap.swapper.Swapper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,9 +28,8 @@ public abstract class MixinLevel {
             at = @At("HEAD")
     )
     private void beforeSetBlock(BlockPos pos, BlockState state, int flags, int recursionLeft, CallbackInfoReturnable<Boolean> cir) {
-        if (BlockSwapConfig.getConfig(false).onlySwapNaturalGeneration()) {
-            Swapper.enterLivePlacement();
-        }
+        Swapper.enterLivePlacement();
+        Swapper.pushDimension(((Level) (Object) this).dimension().location());
     }
 
     @Inject(
@@ -37,9 +37,8 @@ public abstract class MixinLevel {
             at = @At("RETURN")
     )
     private void afterSetBlock(BlockPos pos, BlockState state, int flags, int recursionLeft, CallbackInfoReturnable<Boolean> cir) {
-        if (BlockSwapConfig.getConfig(false).onlySwapNaturalGeneration()) {
-            Swapper.exitLivePlacement();
-        }
+        Swapper.exitLivePlacement();
+        Swapper.popDimension();
     }
 
     @ModifyVariable(
@@ -49,9 +48,12 @@ public abstract class MixinLevel {
             ordinal = 0
     )
     private BlockState replaceSetBlockState(BlockState state) {
-        BlockSwapConfig config = BlockSwapConfig.getConfig(false);
-        if (!config.onlySwapNaturalGeneration() && config.contains(state)) {
-            return Swapper.remapState(state);
+        BlockSwapConfig config = BlockSwapConfig.getPlacementConfig();
+        if (!config.onlySwapNaturalGeneration()) {
+            ResourceLocation dim = ((Level) (Object) this).dimension().location();
+            if (config.contains(state, dim)) {
+                return Swapper.remapState(state, dim, config);
+            }
         }
         return state;
     }

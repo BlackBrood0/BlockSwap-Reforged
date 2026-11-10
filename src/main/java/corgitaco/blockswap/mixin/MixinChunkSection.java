@@ -10,14 +10,29 @@ package corgitaco.blockswap.mixin;
 
 import corgitaco.blockswap.config.BlockSwapConfig;
 import corgitaco.blockswap.swapper.Swapper;
+import corgitaco.blockswap.util.DimensionHolder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(LevelChunkSection.class)
-public abstract class MixinChunkSection {
+public abstract class MixinChunkSection implements DimensionHolder {
+    @Unique
+    private ResourceLocation blockswap$dimension;
+
+    @Override
+    public ResourceLocation blockswap$getDimension() {
+        return this.blockswap$dimension;
+    }
+
+    @Override
+    public void blockswap$setDimension(ResourceLocation dimension) {
+        this.blockswap$dimension = dimension;
+    }
 
     @ModifyVariable(
             method = "setBlockState(IIILnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/level/block/state/BlockState;",
@@ -26,12 +41,20 @@ public abstract class MixinChunkSection {
             ordinal = 0
     )
     private BlockState replaceState(BlockState state) {
-        BlockSwapConfig config = BlockSwapConfig.getConfig(false);
-        if (!config.retroGen() && config.contains(state)) {
-            if (config.onlySwapNaturalGeneration() && Swapper.isLivePlacement()) {
-                return state;
-            }
-            return Swapper.remapState(state);
+        boolean live = Swapper.isLivePlacement();
+        BlockSwapConfig config = live ? BlockSwapConfig.getPlacementConfig() : BlockSwapConfig.getWorldGenConfig();
+
+        if (live && config.onlySwapNaturalGeneration()) {
+            return state;
+        }
+
+        ResourceLocation dim = this.blockswap$dimension;
+        if (dim == null) {
+            dim = Swapper.getCurrentDimension();
+        }
+
+        if (!config.retroGen() && config.contains(state, dim)) {
+            return Swapper.remapState(state, dim, config);
         }
         return state;
     }

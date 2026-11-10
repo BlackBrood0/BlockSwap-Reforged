@@ -9,10 +9,12 @@
 package corgitaco.blockswap.mixin;
 
 import corgitaco.blockswap.config.MissingBlockIDsConfig;
+import corgitaco.blockswap.util.DimensionHolder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.ChunkPos;
@@ -57,6 +59,17 @@ public class MixinChunkSerializer {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Inject(method = "read", at = @At("RETURN"))
+    private static void onReadReturn(ServerLevel level, PoiManager poiManager, RegionStorageInfo regionStorageInfo, ChunkPos pos, CompoundTag tag, CallbackInfoReturnable<ProtoChunk> cir) {
+        ProtoChunk protoChunk = cir.getReturnValue();
+        if (protoChunk != null && level != null) {
+            ResourceLocation dim = level.dimension().location();
+            if (protoChunk instanceof DimensionHolder holder) {
+                holder.blockswap$setDimension(dim);
             }
         }
     }
